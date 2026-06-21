@@ -1,0 +1,2958 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bank Ped Dose (SI131)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Spectral:wght@500;600;700&display=swap');
+
+  :root{
+    --bg:#FAFAF7;
+    --panel:#FFFFFF;
+    --ink:#10312E;
+    --ink-soft:#4B6360;
+    --teal:#1B6B63;
+    --teal-deep:#0F3D3E;
+    --amber:#C77F2C;
+    --amber-bg:#FBF1E3;
+    --sage:#DCE5E0;
+    --sage-line:#C9D6D1;
+    --danger:#B5403A;
+    --danger-bg:#FBEAE8;
+    --radius:10px;
+    --mono: 'Inter', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter','IBM Plex Sans Thai',sans-serif;
+    line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+  }
+  body, input, select, button, textarea { font-family:'Inter','IBM Plex Sans Thai',sans-serif; }
+
+  .num{ font-family:'Spectral', serif; font-feature-settings:"tnum"; }
+
+  /* ---------- Header ---------- */
+  header.top{
+    border-bottom:1px solid var(--sage-line);
+    background:var(--panel);
+    padding:18px 28px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position:sticky;
+    top:0;
+    z-index:50;
+  }
+  .brand{display:flex; align-items:baseline; gap:10px;}
+  .brand .mark{
+    font-family:'Spectral',serif;
+    font-weight:700;
+    font-size:22px;
+    color:var(--teal-deep);
+    letter-spacing:-0.01em;
+  }
+  .brand .si{
+    font-size:12px;
+    font-weight:600;
+    color:var(--teal);
+    background:var(--sage);
+    padding:2px 8px;
+    border-radius:20px;
+    letter-spacing:0.04em;
+  }
+  .brand .tag{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-left:6px;
+  }
+  .top-actions{display:flex; gap:8px;}
+  .top-actions button{
+    font-size:13px;
+  }
+
+  /* ---------- Layout ---------- */
+  .shell{
+    max-width:1280px;
+    margin:0 auto;
+    padding:28px;
+    display:grid;
+    grid-template-columns:340px 1fr;
+    gap:24px;
+    align-items:start;
+  }
+  @media (max-width: 900px){
+    .shell{grid-template-columns:1fr; padding:16px;}
+  }
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--sage-line);
+    border-radius:var(--radius);
+    padding:20px;
+  }
+  .panel + .panel{margin-top:20px;}
+
+  .panel h2{
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--ink-soft);
+    margin:0 0 16px 0;
+    font-weight:600;
+  }
+
+  /* ---------- Form elements ---------- */
+  label{
+    display:block;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:4px;
+    font-weight:500;
+  }
+  .field{margin-bottom:14px;}
+  input[type=text], input[type=number], select, textarea{
+    width:100%;
+    padding:9px 10px;
+    border:1px solid var(--sage-line);
+    border-radius:7px;
+    font-size:14.5px;
+    color:var(--ink);
+    background:#fff;
+    transition:border-color .15s;
+  }
+  input:focus, select:focus, textarea:focus{
+    outline:none;
+    border-color:var(--teal);
+    box-shadow:0 0 0 3px rgba(27,107,99,0.12);
+  }
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .hint{font-size:11.5px; color:var(--ink-soft); margin-top:3px;}
+
+  button{
+    cursor:pointer;
+    border:none;
+    border-radius:7px;
+    font-weight:600;
+    font-size:14px;
+    padding:9px 14px;
+    transition:transform .08s, opacity .15s;
+  }
+  button:active{transform:scale(0.98);}
+  .btn-primary{background:var(--teal-deep); color:#fff;}
+  .btn-primary:hover{background:var(--teal);}
+  .btn-ghost{background:transparent; color:var(--teal-deep); border:1px solid var(--sage-line);}
+  .btn-ghost:hover{background:var(--sage);}
+  .btn-danger{background:transparent; color:var(--danger); border:1px solid #E6C7C4;}
+  .btn-danger:hover{background:var(--danger-bg);}
+  .btn-sm{padding:5px 10px; font-size:12.5px;}
+  .btn-block{width:100%;}
+
+  /* ---------- Patient summary ---------- */
+  .age-display{
+    background:var(--sage);
+    border-radius:7px;
+    padding:10px 12px;
+    font-size:13px;
+    color:var(--teal-deep);
+    margin-bottom:14px;
+    display:none;
+  }
+  .age-display.show{display:block;}
+  .age-display b{font-family:'Spectral',serif; font-size:15px;}
+
+  .ibw-box{
+    border:1px dashed var(--sage-line);
+    border-radius:8px;
+    padding:12px;
+    margin-top:6px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    display:none;
+  }
+  .ibw-box.show{display:block;}
+  .ibw-box .ibw-flag{
+    color:var(--amber);
+    font-weight:600;
+    font-size:12.5px;
+    margin-bottom:6px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .ibw-box .ibw-val{
+    font-family:'Spectral',serif;
+    font-size:18px;
+    color:var(--teal-deep);
+    font-weight:600;
+  }
+
+  /* ---------- Drug search / list ---------- */
+  .search-wrap{position:relative; margin-bottom:16px;}
+  .search-wrap input{padding-left:34px;}
+  .search-wrap svg{
+    position:absolute; left:10px; top:50%; transform:translateY(-50%);
+    width:15px; height:15px; stroke:var(--ink-soft);
+  }
+
+  .drug-list{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    max-height:420px;
+    overflow-y:auto;
+    padding-right:4px;
+  }
+  .drug-item{
+    border:1px solid var(--sage-line);
+    border-radius:8px;
+    padding:10px 12px;
+    cursor:pointer;
+    transition:background .12s, border-color .12s;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+  }
+  .drug-item:hover{background:var(--sage); border-color:var(--sage-line);}
+  .drug-item.active{
+    background:var(--teal-deep);
+    border-color:var(--teal-deep);
+  }
+  .drug-item.active .d-name, .drug-item.active .d-cat{color:#fff;}
+  .d-name{font-weight:600; font-size:14.5px;}
+  .d-cat{font-size:11.5px; color:var(--ink-soft); display:block; margin-top:1px;}
+  .d-actions{display:flex; gap:4px; flex-shrink:0;}
+  .icon-btn{
+    background:transparent;
+    border:none;
+    padding:4px;
+    border-radius:5px;
+    color:var(--ink-soft);
+    display:flex;
+  }
+  .icon-btn:hover{background:rgba(0,0,0,0.06);}
+  .drug-item.active .icon-btn{color:#dfeae8;}
+  .drug-item.active .icon-btn:hover{background:rgba(255,255,255,0.15);}
+  .icon-btn svg{width:14px; height:14px;}
+
+  .empty-state{
+    text-align:center;
+    padding:40px 16px;
+    color:var(--ink-soft);
+    font-size:13.5px;
+  }
+  .empty-state svg{width:36px; height:36px; stroke:var(--sage-line); margin-bottom:10px;}
+
+  /* ---------- Result card (signature element) ---------- */
+  .result-stage{
+    min-height:340px;
+  }
+  .result-empty{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    height:340px;
+    color:var(--ink-soft);
+    text-align:center;
+    gap:8px;
+  }
+  .result-empty svg{width:42px;height:42px;stroke:var(--sage-line);}
+  .result-empty .big{font-family:'Spectral',serif; font-size:17px; color:var(--ink);}
+
+  .res-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .res-head .name{
+    font-family:'Spectral',serif;
+    font-size:24px;
+    font-weight:700;
+    color:var(--teal-deep);
+  }
+  .res-head .cat-pill{
+    font-size:11.5px;
+    background:var(--sage);
+    color:var(--teal-deep);
+    padding:2px 9px;
+    border-radius:20px;
+    margin-left:8px;
+    font-weight:600;
+    vertical-align:middle;
+  }
+  .res-head .src{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:3px;
+  }
+
+  .toggle-basis{
+    display:inline-flex;
+    border:1px solid var(--sage-line);
+    border-radius:7px;
+    overflow:hidden;
+    flex-shrink:0;
+  }
+  .toggle-basis button{
+    background:#fff;
+    color:var(--ink-soft);
+    border-radius:0;
+    font-size:12.5px;
+    padding:7px 12px;
+  }
+  .toggle-basis button.sel{
+    background:var(--teal-deep);
+    color:#fff;
+  }
+
+  .dose-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(150px,1fr));
+    gap:12px;
+    margin-bottom:18px;
+  }
+  .dose-card{
+    background:var(--bg);
+    border:1px solid var(--sage-line);
+    border-radius:8px;
+    padding:14px;
+  }
+  .dose-card .label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+    font-weight:600;
+  }
+  .dose-card .value{
+    font-family:'Spectral',serif;
+    font-size:26px;
+    font-weight:700;
+    color:var(--ink);
+    line-height:1.1;
+  }
+  .dose-card .value small{font-size:13px; font-weight:500; color:var(--ink-soft);}
+  .dose-card.flag{
+    background:var(--amber-bg);
+    border-color:#E9CCA0;
+  }
+  .dose-card.flag .value{color:var(--amber);}
+  .dose-card.danger{
+    background:var(--danger-bg);
+    border-color:#E6C7C4;
+  }
+  .dose-card.danger .value{color:var(--danger);}
+
+  .max-warning{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    background:var(--danger-bg);
+    border:1px solid #E6C7C4;
+    border-radius:8px;
+    padding:12px 14px;
+    margin-bottom:16px;
+    font-size:13px;
+    color:#7A2A26;
+  }
+  .max-warning svg{width:18px;height:18px; flex-shrink:0; margin-top:1px; stroke:var(--danger);}
+
+  .steps{
+    border-top:1px dashed var(--sage-line);
+    padding-top:16px;
+  }
+  .steps h3{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    color:var(--ink-soft);
+    margin:0 0 10px 0;
+    font-weight:600;
+  }
+  .step-line{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    padding:7px 0;
+    font-size:13.5px;
+    border-bottom:1px solid #F0EEE7;
+  }
+  .step-line:last-child{border-bottom:none; font-weight:700; color:var(--teal-deep);}
+  .step-line .lbl{color:var(--ink-soft);}
+  .step-line .val{font-family:'Spectral',serif; font-weight:600;}
+
+  .notes-box{
+    margin-top:16px;
+    background:var(--sage);
+    border-radius:8px;
+    padding:12px 14px;
+    font-size:13px;
+    color:var(--teal-deep);
+  }
+  .notes-box b{display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:4px; opacity:0.8;}
+
+  /* ---------- Renal (CrCl) adjustment ---------- */
+  .renal-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    background:var(--amber-bg);
+    color:var(--amber);
+    border:1px solid #E9CCA0;
+    border-radius:20px;
+    padding:3px 10px;
+    font-size:12px;
+    font-weight:600;
+    margin-left:8px;
+    cursor:pointer;
+  }
+  .renal-badge svg{width:13px;height:13px;}
+  .renal-badge:hover{background:#F5E5C8;}
+
+  .renal-panel{
+    border:1px solid #E9CCA0;
+    background:var(--amber-bg);
+    border-radius:10px;
+    padding:16px;
+    margin-bottom:18px;
+  }
+  .renal-panel-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:12px;
+  }
+  .renal-panel-head .title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+    color:#8a5a1d;
+    font-size:14.5px;
+  }
+  .renal-panel-head .title svg{width:18px;height:18px; flex-shrink:0;}
+  .renal-mode-toggle{
+    display:inline-flex;
+    border:1px solid #E9CCA0;
+    border-radius:7px;
+    overflow:hidden;
+    flex-shrink:0;
+    background:#fff;
+  }
+  .renal-mode-toggle button{
+    background:transparent;
+    color:#8a5a1d;
+    border-radius:0;
+    font-size:11.5px;
+    padding:6px 10px;
+  }
+  .renal-mode-toggle button.sel{background:var(--amber); color:#fff;}
+
+  .renal-group{margin-bottom:14px;}
+  .renal-group:last-child{margin-bottom:0;}
+  .renal-group-title{
+    font-size:12.5px;
+    font-weight:700;
+    color:#8a5a1d;
+    margin-bottom:6px;
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+  }
+  .renal-bracket-row{
+    display:flex;
+    gap:10px;
+    padding:7px 0;
+    font-size:13.5px;
+    color:#5c4117;
+    border-bottom:1px solid #F0DFB8;
+    align-items:baseline;
+  }
+  .renal-bracket-row:last-child{border-bottom:none;}
+  .renal-bracket-row .crcl-range{
+    font-family:'Spectral',serif;
+    font-weight:700;
+    flex-shrink:0;
+    min-width:110px;
+    color:#8a5a1d;
+  }
+
+  /* interactive picker mode */
+  .renal-picker-select{margin-bottom:14px;}
+  .renal-picker-select select{border-color:#E9CCA0; background:#fff;}
+  .renal-result-box{
+    background:#fff;
+    border:1px solid #E9CCA0;
+    border-radius:8px;
+    padding:12px 14px;
+    font-size:14px;
+    color:#5c4117;
+    line-height:1.5;
+  }
+  .renal-result-box .crcl-range{
+    font-family:'Spectral',serif;
+    font-weight:700;
+    color:#8a5a1d;
+    display:block;
+    margin-bottom:4px;
+    font-size:13px;
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-backdrop{
+    position:fixed; inset:0;
+    background:rgba(16,49,46,0.45);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:20px;
+  }
+  .modal-backdrop.show{display:flex;}
+  .modal{
+    background:#fff;
+    border-radius:12px;
+    max-width:560px;
+    width:100%;
+    max-height:88vh;
+    overflow-y:auto;
+    padding:26px;
+  }
+
+  /* allow user to resize the modal dialog if they need wider/taller editing space */
+  .modal{ resize: both; overflow: auto; }
+  .modal h2{
+    font-family:'Spectral',serif;
+    font-size:20px;
+    margin:0 0 18px 0;
+    color:var(--teal-deep);
+  }
+  .modal-foot{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    margin-top:20px;
+    border-top:1px solid var(--sage-line);
+    padding-top:16px;
+  }
+  textarea#bulkInput{height:160px; font-family:var(--mono); font-size:13px; resize:vertical;}
+  .modal-tabs{display:flex; gap:4px; margin-bottom:18px; border-bottom:1px solid var(--sage-line);}
+  .modal-tab{
+    background:transparent;
+    border-radius:0;
+    color:var(--ink-soft);
+    padding:8px 4px;
+    margin-right:18px;
+    border-bottom:2px solid transparent;
+  }
+  .modal-tab.sel{color:var(--teal-deep); border-bottom-color:var(--teal-deep);}
+  .tab-panel{display:none;}
+  .tab-panel.show{display:block;}
+
+  .json-help{font-size:11.5px; color:var(--ink-soft); margin-top:8px; line-height:1.6;}
+  .json-help code{background:var(--sage); padding:1px 5px; border-radius:4px; font-size:11px;}
+
+  /* ---------- Preparation rows ---------- */
+  .prep-list{display:flex; flex-direction:column; gap:8px;}
+  .prep-row{
+    display:grid;
+    grid-template-columns:1.3fr 0.8fr auto 0.8fr auto auto;
+    gap:6px;
+    align-items:center;
+    background:var(--bg);
+    border:1px solid var(--sage-line);
+    border-radius:7px;
+    padding:8px;
+  }
+  .prep-row input{padding:7px 8px; font-size:13px;}
+  /* limit widths for numeric prep fields so they don't stretch across the modal */
+  .prep-row input.prep-amt,
+  .prep-row input.prep-vol,
+  .prep-row input.prep-amt2,
+  .prep-row input.prep-reconvol{ max-width:110px; width:100%; box-sizing:border-box; }
+  .prep-row .prep-x{color:var(--ink-soft); font-size:13px; text-align:center;}
+  .prep-row .prep-del{
+    background:transparent;
+    border:none;
+    color:var(--danger);
+    padding:4px;
+    border-radius:5px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .prep-row .prep-del:hover{background:var(--danger-bg);}
+  .prep-row .prep-del svg{width:14px;height:14px;}
+  .prep-row .prep-unit-custom{
+    grid-column:1 / -1;
+    margin-top:2px;
+  }
+  .prep-row .prep-combo-toggle{
+    grid-column:1 / -1;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:6px;
+    cursor:pointer;
+  }
+  .prep-row .prep-combo-toggle input{width:auto; padding:0;}
+  .prep-row .prep-combo-fields{
+    grid-column:1 / -1;
+    display:grid;
+    grid-template-columns:1.3fr 0.8fr 1fr;
+    gap:6px;
+    align-items:center;
+    margin-top:4px;
+    padding-top:8px;
+    border-top:1px dashed var(--sage-line);
+  }
+  .prep-row .prep-x2{color:var(--ink-soft); font-size:12px;}
+
+  .prep-row .prep-form-toggle{
+    grid-column:1 / -1;
+    display:flex;
+    gap:6px;
+    margin:4px 0 2px 0;
+  }
+  .prep-row .prep-form-btn{
+    flex:1;
+    background:#fff;
+    border:1px solid var(--sage-line);
+    color:var(--ink-soft);
+    font-size:12px;
+    padding:6px 8px;
+    border-radius:6px;
+  }
+  .prep-row .prep-form-btn.sel{
+    background:var(--teal-deep);
+    color:#fff;
+    border-color:var(--teal-deep);
+  }
+  .prep-row .prep-unit-custom-spacer{grid-column:1 / -1;}
+  .prep-row .prep-recon-row{
+    grid-column:1 / -1;
+    background:var(--amber-bg);
+    border:1px solid #E9CCA0;
+    border-radius:7px;
+    padding:10px;
+    margin-top:4px;
+  }
+  .prep-row .prep-recon-row label{
+    font-size:11.5px;
+    color:#8a5a1d;
+    font-weight:600;
+    margin-bottom:5px;
+    display:block;
+  }
+  .prep-row .prep-recon-input-wrap{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-bottom:5px;
+  }
+  .prep-row .prep-recon-input-wrap input{flex:1; max-width:100px;}
+  .prep-row .prep-recon-input-wrap span{font-size:12.5px; color:#8a5a1d;}
+  .prep-row .prep-recon-result{font-size:12px; color:#8a5a1d;}
+
+  /* allow editing textareas to be resized by the user */
+  .regimen-card textarea.regimen-notes{ resize:vertical; }
+
+  @media (max-width:560px){
+    .prep-row{grid-template-columns:1fr 1fr;}
+    .prep-row .prep-unit-custom{grid-column:1 / -1;}
+    .prep-row .prep-combo-fields{grid-template-columns:1fr 1fr;}
+    .prep-row .prep-x2{grid-column:1 / -1;}
+  }
+
+  .prep-select-wrap{margin-bottom:16px;}
+  .ml-card{
+    background:var(--teal-deep);
+    border-color:var(--teal-deep);
+  }
+
+  /* ---------- Regimen editor cards ---------- */
+  .regimen-list{display:flex; flex-direction:column; gap:12px;}
+  .regimen-card{
+    border:1px solid var(--sage-line);
+    border-radius:8px;
+    background:var(--bg);
+    padding:12px;
+  }
+  .regimen-card-head{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:10px;
+  }
+  .regimen-card-head input.regimen-name{
+    flex:1;
+    font-weight:600;
+    font-size:14px;
+  }
+  .regimen-del{
+    background:transparent;
+    border:none;
+    color:var(--danger);
+    padding:6px;
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .regimen-del:hover{background:var(--danger-bg);}
+  .regimen-del svg{width:15px;height:15px;}
+  .regimen-card .row2{margin-bottom:8px;}
+  .regimen-card .row2:last-child{margin-bottom:0;}
+  .regimen-card label{font-size:11px; margin-bottom:3px;}
+  .regimen-card input, .regimen-card select{font-size:13px; padding:7px 8px;}
+  .regimen-card .unit-custom-row{margin-top:-2px; margin-bottom:8px;}
+  .regimen-card textarea.regimen-notes{height:50px; font-size:13px; padding:7px 8px;}
+
+  /* ---------- Renal group editor (in modal) ---------- */
+  .renal-edit-group{
+    border:1px solid var(--sage-line);
+    border-radius:8px;
+    background:var(--bg);
+    padding:12px;
+    margin-bottom:10px;
+  }
+  .renal-edit-group-head{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:10px;
+  }
+  .renal-edit-group-head input.renal-group-label{
+    flex:1;
+    font-weight:600;
+    font-size:13px;
+  }
+  .renal-bracket-edit-row{
+    display:grid;
+    grid-template-columns:110px 1fr auto;
+    gap:6px;
+    margin-bottom:6px;
+    align-items:center;
+  }
+  .renal-bracket-edit-row input{font-size:12.5px; padding:6px 7px;}
+  .renal-bracket-edit-row textarea{font-size:12.5px; padding:6px 7px; height:36px; resize:vertical;}
+  @media (max-width:560px){
+    .renal-bracket-edit-row{grid-template-columns:1fr; grid-template-areas:"range" "text" "del";}
+  }
+  .ml-card .label{color:#BFE0DB;}
+  .ml-card .value{color:#fff;}
+  .ml-card .value small{color:#BFE0DB;}
+  .ml-exact{font-size:11.5px; color:var(--ink-soft); margin-top:4px;}
+
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--teal-deep); color:#fff;
+    padding:10px 20px; border-radius:8px;
+    font-size:13.5px; font-weight:500;
+    opacity:0; pointer-events:none;
+    transition:opacity .2s, transform .2s;
+    z-index:200;
+    box-shadow:0 6px 20px rgba(0,0,0,0.15);
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.err{background:var(--danger);}
+
+  ::-webkit-scrollbar{width:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--sage-line); border-radius:10px;}
+
+  .footer-note{
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:11.5px;
+    padding:24px 0 8px;
+  }
+
+  :focus-visible{outline:2px solid var(--teal); outline-offset:2px;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <span class="mark">Bank Ped Dose</span>
+    <span class="si">SI131</span>
+    <span class="tag">เครื่องคำนวณยาเด็ก</span>
+  </div>
+  <div class="top-actions">
+    <button class="btn-ghost btn-sm" id="btnExport">Export ข้อมูล</button>
+    <button class="btn-ghost btn-sm" id="btnImport">Import ข้อมูล</button>
+    <input type="file" id="fileImport" accept="application/json" style="display:none;">
+  </div>
+</header>
+
+<div class="shell">
+
+  <!-- LEFT: patient input -->
+  <div>
+    <div class="panel">
+      <h2>ข้อมูลผู้ป่วย</h2>
+
+      <div class="field">
+        <label>อายุผู้ป่วย</label>
+        <div class="row2">
+          <div>
+            <input type="number" id="ageYears" min="0" max="20" placeholder="ปี" inputmode="numeric">
+            <div class="hint">ปี</div>
+          </div>
+          <div>
+            <input type="number" id="ageMonths" min="0" max="11" placeholder="เดือน" inputmode="numeric">
+            <div class="hint">เดือน</div>
+          </div>
+        </div>
+      </div>
+      <div class="age-display" id="ageDisplay"></div>
+
+      <div class="row2">
+        <div class="field">
+          <label for="weight">น้ำหนัก (kg)</label>
+          <input type="number" id="weight" step="0.1" min="0" placeholder="เช่น 18.5">
+        </div>
+        <div class="field">
+          <label for="height">ส่วนสูง (cm)</label>
+          <input type="number" id="height" step="0.1" min="0" placeholder="เช่น 105">
+        </div>
+      </div>
+
+      <div class="ibw-box" id="ibwBox"></div>
+    </div>
+
+    <div class="panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h2 style="margin:0;">รายการยา</h2>
+        <button class="btn-primary btn-sm" id="btnAddDrug">+ เพิ่มยา</button>
+      </div>
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" id="searchDrug" placeholder="ค้นหายา...">
+      </div>
+      <div class="drug-list" id="drugList"></div>
+      <button class="btn-ghost btn-block" id="btnBulkImport" style="margin-top:14px;">นำเข้ารายการยาแบบหลายตัว (Bulk)</button>
+    </div>
+  </div>
+
+  <!-- RIGHT: result -->
+  <div>
+    <div class="panel result-stage" id="resultStage">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+</div>
+
+<div class="footer-note">Bank Ped Dose (SI131) · สำหรับใช้เป็นเครื่องมือช่วยอ้างอิง โปรดตรวจสอบความถูกต้องกับแหล่งอ้างอิงทุกครั้งก่อนใช้จริง</div>
+
+<!-- Add/Edit Drug Modal -->
+<div class="modal-backdrop" id="drugModalBackdrop">
+  <div class="modal">
+    <h2 id="drugModalTitle">เพิ่มยาใหม่</h2>
+
+    <div class="field">
+      <label>ชื่อยา</label>
+      <input type="text" id="f_name" placeholder="เช่น Amoxicillin">
+    </div>
+    <div class="field">
+      <label>หมวดหมู่</label>
+      <input type="text" id="f_cat" placeholder="เช่น Penicillin/Antibiotic">
+    </div>
+
+    <div class="field">
+      <label>ขนาดยาตามข้อบ่งใช้ (regimens)</label>
+      <div id="regimenList" class="regimen-list"></div>
+      <button type="button" class="btn-ghost btn-sm" id="btnAddRegimen" style="margin-top:10px;">+ เพิ่มข้อบ่งใช้ / เงื่อนไข</button>
+      <div class="hint">เช่น "Mild-moderate infection" กับ "Severe infection" เป็นยาตัวเดียวกันแต่คนละขนาดยา — เพิ่มได้หลายข้อบ่งใช้</div>
+    </div>
+
+    <div class="field">
+      <label>รูปแบบยาที่มีในโรงพยาบาล (preparations)</label>
+      <div id="prepList" class="prep-list"></div>
+      <button type="button" class="btn-ghost btn-sm" id="btnAddPrep" style="margin-top:8px;">+ เพิ่มรูปแบบยา</button>
+      <div class="hint">เช่น Syrup 120mg/5mL, Drops 100mg/mL, Injection 10mg/mL — เพิ่มได้หลายรูปแบบ (ใช้ร่วมกันทุกข้อบ่งใช้)</div>
+    </div>
+
+    <div class="field">
+      <label>
+        <input type="checkbox" id="f_hasRenal" style="width:auto; margin-right:6px;">
+        ยานี้ต้องปรับขนาดตามการทำงานของไต (CrCl)
+      </label>
+      <div id="renalEditorWrap" style="display:none; margin-top:10px;">
+        <div id="renalGroupList"></div>
+        <button type="button" class="btn-ghost btn-sm" id="btnAddRenalGroup" style="margin-top:8px;">+ เพิ่มกลุ่ม (เช่น Oral / IV)</button>
+        <div class="hint">แต่ละกลุ่มคือเส้นทางการให้ยา (เช่น Oral, IV) อาจระบุกลุ่มอายุ (เด็ก/ผู้ใหญ่) แล้วเพิ่มช่วง CrCl พร้อมคำแนะนำขนาดยาได้หลายช่วง</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>แหล่งอ้างอิง (resource)</label>
+      <input type="text" id="f_source" placeholder="เช่น Nelson 21st ed, Hospital protocol ER Thungsong 2025">
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn-ghost" id="btnCancelDrug">ยกเลิก</button>
+      <button class="btn-primary" id="btnSaveDrug">บันทึกยา</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Import Modal -->
+<div class="modal-backdrop" id="bulkModalBackdrop">
+  <div class="modal">
+    <h2>นำเข้ารายการยาแบบหลายตัว</h2>
+    <div class="modal-tabs">
+      <button class="modal-tab sel" data-tab="json">JSON</button>
+      <button class="modal-tab" data-tab="csv">CSV / TSV</button>
+    </div>
+
+    <div class="tab-panel show" id="tabJson">
+      <textarea id="bulkInput" placeholder='[{"name":"Amoxicillin","category":"Antibiotic","source":"","preps":[{"name":"Suspension","amt":250,"vol":5,"unit":"mg/mL"}],"regimens":[{"name":"Mild-moderate infection","unit":"mg/kg/day","doseMin":25,"doseMax":45,"absMax":1500,"absMaxUnit":"mg/kg/day","freq":"q8-12h PO","notes":""},{"name":"Severe infection","unit":"mg/kg/day","doseMin":80,"doseMax":90,"absMax":4000,"absMaxUnit":"mg/kg/day","freq":"q8h PO","notes":""}]}]'></textarea>
+      <div class="json-help">
+        วาง JSON array ของยา แต่ละตัวมี field: <code>name, category, source</code><br>
+        และ <code>regimens</code> (ข้อบ่งใช้/เงื่อนไข) เป็น array — แต่ละตัวมี <code>name, unit, doseMin, doseMax, absMax, absMaxUnit, freq, notes</code> — ใส่ได้หลายข้อบ่งใช้ต่อยา (เช่น mild-moderate vs severe infection)<br>
+        <strong>absMaxUnit</strong> รองรับค่าเช่น <code>mg/dose</code>, <code>mg/day</code>, <code>mg/kg/day</code>, <code>mcg/dose</code>, <code>mcg/day</code>, <code>mcg/kg/day</code><br>
+        และ <code>preps</code> (รูปแบบยาที่มี) เป็น array เช่น <code>[{"name":"Syrup","amt":120,"vol":5,"unit":"mg/mL"}]</code> หมายถึง 120mg ต่อ 5mL — ใช้ร่วมกันทุกข้อบ่งใช้
+      </div>
+    </div>
+    <div class="tab-panel" id="tabCsv">
+      <textarea id="bulkInputCsv" placeholder="name,category,unit,doseMin,doseMax,absMax,absMaxUnit,freq,notes,source
+Paracetamol,Antipyretic,mg/kg/dose,10,15,1000,mg/kg/day,q4-6h PO,,Nelson 21st"></textarea>
+      <div class="json-help">
+        แถวแรกต้องเป็นหัวคอลัมน์ตามชื่อ field ด้านบน คั่นด้วย comma หรือ tab ก็ได้ — CSV รองรับ 1 ข้อบ่งใช้ต่อยาเท่านั้น (ไม่รองรับ regimens/preps หลายตัว — เพิ่มทีหลังได้ผ่านปุ่มแก้ไข)
+        <div style="margin-top:8px; font-size:13px; color:var(--ink-soft);">ตัวอย่าง absMaxUnit: mg/dose, mg/day, mg/kg/day, mcg/dose, mcg/day, mcg/kg/day</div>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn-ghost" id="btnCancelBulk">ยกเลิก</button>
+      <button class="btn-primary" id="btnSaveBulk">นำเข้า</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ===================== Storage ===================== */
+  const STORAGE_KEY = "bankPedDose_drugs_v1";
+
+  function loadDrugs(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){
+        const parsed = JSON.parse(raw);
+        return parsed.map(normalizeDrug);
+      }
+    }catch(e){}
+    return defaultDrugs().map(normalizeDrug);
+  }
+  function saveDrugs(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.drugs));
+  }
+
+  // Converts a drug into the regimens-based shape. Old drugs stored dose
+  // fields (unit/doseMin/doseMax/absMax/absMaxUnit/freq/notes) directly on
+  // the drug object; new drugs store them inside drug.regimens[]. This
+  // makes both shapes work transparently so existing saved data never breaks.
+  function normalizeDrug(d){
+    if(Array.isArray(d.regimens) && d.regimens.length > 0){
+      // already in new shape; make sure each regimen has an id
+      d.regimens.forEach(r => { if(!r.id) r.id = uid(); });
+      return d;
+    }
+    const regimen = {
+      id: uid(),
+      name: "ขนาดยาทั่วไป",
+      unit: d.unit || "mg/kg/dose",
+      doseMin: d.doseMin ?? null,
+      doseMax: d.doseMax ?? null,
+      absMax: d.absMax ?? null,
+      absMaxUnit: d.absMaxUnit || "mg/dose",
+      freq: d.freq || "",
+      notes: d.notes || "",
+    };
+    return {
+      id: d.id || uid(),
+      name: d.name,
+      category: d.category || "",
+      source: d.source || "",
+      preps: d.preps || [],
+      regimens: [regimen],
+    };
+  }
+
+  function defaultDrugs(){
+    return [
+      {
+        id: uid(), name:"Paracetamol", category:"Antipyretic/Analgesic",
+        source:"ตัวอย่าง",
+        preps:[
+          {name:"Syrup", amt:120, vol:5, unit:"mg/mL"},
+          {name:"Drops", amt:100, vol:1, unit:"mg/mL"}
+        ],
+        regimens:[
+          {
+            id: uid(), name:"ขนาดยาทั่วไป",
+            unit:"mg/kg/dose", doseMin:10, doseMax:15,
+            absMax:1000, absMaxUnit:"mg/dose",
+            freq:"q4-6h PO/PR, max 5 doses/day หรือไม่เกิน 75 mg/kg/day",
+            notes:"ตัวอย่างข้อมูลเริ่มต้น แก้ไข/ลบได้ตามต้องการ",
+          }
+        ]
+      },
+      {
+        id: uid(), name:"Amoxicillin", category:"Penicillin/Antibiotic",
+        source:"ตัวอย่าง",
+        preps:[
+          {name:"Suspension", amt:250, vol:5, unit:"mg/mL"}
+        ],
+        regimens:[
+          {
+            id: uid(), name:"Mild-moderate infection",
+            unit:"mg/kg/day", doseMin:25, doseMax:45,
+            absMax:1500, absMaxUnit:"mg/day",
+            freq:"แบ่งให้ q8-12h PO",
+            notes:"ตัวอย่าง — แก้ไข/ลบได้ตามต้องการ",
+          },
+          {
+            id: uid(), name:"Severe infection",
+            unit:"mg/kg/day", doseMin:80, doseMax:90,
+            absMax:4000, absMaxUnit:"mg/day",
+            freq:"แบ่งให้ q8h PO",
+            notes:"ตัวอย่าง — เช่น otitis media รุนแรง",
+          }
+        ]
+      },
+      {
+        id: uid(), name:"Co-amoxiclav (Amoxicillin/Clavulanate)", category:"Penicillin combo/Antibiotic",
+        source:"ตัวอย่าง — ปรับตามความเข้มข้นที่ใช้จริงในโรงพยาบาล",
+        preps:[
+          {name:"Suspension 400/57", amt:400, vol:5, unit:"mg/mL", name2:"Clavulanic acid", amt2:57},
+          {name:"Suspension 228/5 (เด็กเล็ก)", amt:200, vol:5, unit:"mg/mL", name2:"Clavulanic acid", amt2:28.5}
+        ],
+        regimens:[
+          {
+            id: uid(), name:"Mild-moderate infection (คิดตาม Amoxicillin)",
+            unit:"mg/kg/day", doseMin:25, doseMax:45,
+            absMax:1750, absMaxUnit:"mg/day",
+            freq:"q8h PO",
+            notes:"ขนาดยาคิดจากปริมาณ Amoxicillin เท่านั้น — Clavulanic acid จะคำนวณให้อัตโนมัติตามอัตราส่วนของรูปแบบยาที่เลือก ตัวอย่าง — แก้ไข/ลบได้ตามต้องการ",
+          },
+          {
+            id: uid(), name:"Severe infection (คิดตาม Amoxicillin)",
+            unit:"mg/kg/day", doseMin:80, doseMax:90,
+            absMax:4000, absMaxUnit:"mg/day",
+            freq:"q8h PO",
+            notes:"ขนาดยาคิดจากปริมาณ Amoxicillin เท่านั้น — ตรวจสอบขนาด Clavulanic acid ไม่ให้เกิน 10 mg/kg/day",
+          }
+        ],
+        renalAdjust:[
+          {
+            label:"Oral",
+            brackets:[
+              {range:"CrCl < 30 mL/min", text:"ไม่ใช้ 875 mg หรือ extended tablet"},
+              {range:"CrCl 10-30 mL/min", text:"ให้ 250-500 mg ทุก 12 ชั่วโมง"},
+              {range:"CrCl < 10 mL/min", text:"ให้ 250-500 mg ทุก 24 ชั่วโมง"},
+            ]
+          },
+          {
+            label:"IV เด็ก",
+            brackets:[
+              {range:"CrCl 10-30 mL/min", text:"30 mg/kg วันละ 2 ครั้ง"},
+              {range:"CrCl < 10 mL/min", text:"30 mg/kg ทุก 24 ชั่วโมง"},
+            ]
+          },
+          {
+            label:"IV ผู้ใหญ่",
+            brackets:[
+              {range:"CrCl 10-30 mL/min", text:"ครั้งแรก Co-amoxiclav 1.2 g ตามด้วย 0.6 g วันละ 2 ครั้ง"},
+              {range:"CrCl < 10 mL/min", text:"ครั้งแรก Co-amoxiclav 1.2 g ตามด้วย 0.6 g ทุก 24 ชั่วโมง"},
+            ]
+          }
+        ]
+      },
+      {
+        id: uid(), name:"Ibuprofen", category:"NSAID/Antipyretic",
+        source:"ตัวอย่าง",
+        preps:[
+          {name:"Suspension", amt:100, vol:5, unit:"mg/mL"}
+        ],
+        regimens:[
+          {
+            id: uid(), name:"ขนาดยาทั่วไป",
+            unit:"mg/kg/dose", doseMin:5, doseMax:10,
+            absMax:400, absMaxUnit:"mg/dose",
+            freq:"q6-8h PO, max 40 mg/kg/day",
+            notes:"หลีกเลี่ยงในเด็กอายุ <6 เดือน, ภาวะขาดน้ำ, โรคไต",
+          }
+        ]
+      },
+      {
+        id: uid(), name:"Bromhexine", category:"Mucolytic",
+        source:"ตัวอย่าง (age-based dosing)",
+        preps:[
+          {name:"Tablet", amt:8, vol:1, unit:"mg/tab"}
+        ],
+        regimens:[
+          {
+            id: uid(), name:"เด็ก 2-6 ปี",
+            unit:"mg/dose", doseMin:2, doseMax:2,
+            absMax:null, absMaxUnit:"",
+            ageBased:true, ageMinMonths:24, ageMaxMonths:83,
+            freq:"tid PC",
+            notes:"เหมาะสำหรับเด็กอายุ 2-6 ปี",
+          },
+          {
+            id: uid(), name:"เด็ก 6-12 ปี",
+            unit:"mg/dose", doseMin:4, doseMax:8,
+            absMax:null, absMaxUnit:"",
+            ageBased:true, ageMinMonths:72, ageMaxMonths:143,
+            freq:"tid PC",
+            notes:"เหมาะสำหรับเด็กอายุ 6-12 ปี",
+          },
+          {
+            id: uid(), name:"วัยรุ่น ≥12 ปี และผู้ใหญ่",
+            unit:"mg/dose", doseMin:8, doseMax:8,
+            absMax:null, absMaxUnit:"",
+            ageBased:true, ageMinMonths:144, ageMaxMonths:null,
+            freq:"tid PC",
+            notes:"ไม่ควรใช้ในเด็กอายุต่ำกว่า 2 ปี",
+          }
+        ]
+      }
+    ];
+  }
+
+  function uid(){
+    return 'd_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+  }
+
+  /* ===================== State ===================== */
+  const state = {
+    drugs: loadDrugs(),
+    selectedDrugId: null,
+    editingDrugId: null,
+    basisMode: "auto", // "auto" | "actual" | "ibw"
+    selectedPrepIndex: 0,
+    selectedRegimenIndex: 0,
+    renalPanelOpen: false,
+    renalPanelMode: "list", // "list" (display panel) | "picker" (interactive)
+    renalPickerGroupIdx: 0,
+    renalPickerBracketIdx: 0,
+  };
+
+  /* ===================== Age calc ===================== */
+  function buildAge(years, months){
+    years = years || 0;
+    months = months || 0;
+    if(years === 0 && months === 0) return null;
+    // normalize months overflow (e.g. 13 months -> 1y 1m)
+    years += Math.floor(months/12);
+    months = months % 12;
+    const totalMonths = years*12 + months;
+    const totalDays = Math.round(totalMonths * 30.44); // approximation, used only for display/edge checks
+    return {years, months, days:0, totalDays, totalMonths};
+  }
+
+  function ageLabel(age){
+    if(!age) return "";
+    if(age.years < 1){
+      return `${age.months} เดือน`;
+    }
+    if(age.months === 0){
+      return `${age.years} ปี`;
+    }
+    return `${age.years} ปี ${age.months} เดือน`;
+  }
+
+  function parseAgeRange(years, months){
+    const y = (years === null || years === undefined || years === "") ? 0 : Number(years);
+    const m = (months === null || months === undefined || months === "") ? 0 : Number(months);
+    if((years === null || years === undefined || years === "") && (months === null || months === undefined || months === "")) return null;
+    if(isNaN(y) || isNaN(m) || y < 0 || m < 0) return null;
+    return y * 12 + m;
+  }
+
+  function regimenAgeLabel(regimen){
+    const min = regimen.ageMinMonths;
+    const max = regimen.ageMaxMonths;
+    if(min == null && max == null) return "";
+    if(min != null && max != null){
+      if(min === max){
+        return `อายุ ${Math.floor(min/12)} ปี ${min%12} เดือน`;
+      }
+      return `อายุ ${formatAgeMonths(min)} – ${formatAgeMonths(max)}`;
+    }
+    if(min != null){
+      return `อายุ ≥ ${formatAgeMonths(min)}`;
+    }
+    return `อายุ ≤ ${formatAgeMonths(max)}`;
+  }
+
+  function formatAgeMonths(totalMonths){
+    if(totalMonths == null) return "";
+    const years = Math.floor(totalMonths / 12);
+    const months = totalMonths % 12;
+    if(years === 0) return `${months} เดือน`;
+    if(months === 0) return `${years} ปี`;
+    return `${years} ปี ${months} เดือน`;
+  }
+
+  function ageMatchesRegimen(age, regimen){
+    if(!age) return false;
+    const total = age.totalMonths;
+    const min = regimen.ageMinMonths;
+    const max = regimen.ageMaxMonths;
+    if(min != null && total < min) return false;
+    if(max != null && total > max) return false;
+    return true;
+  }
+
+  function findAgeMatchedRegimenIndex(drug, age){
+    if(!age || !drug || !Array.isArray(drug.regimens)) return null;
+    for(let i=0;i<drug.regimens.length;i++){
+      const regimen = drug.regimens[i];
+      if(!regimen.ageBased) continue;
+      if(ageMatchesRegimen(age, regimen)) return i;
+    }
+    return null;
+  }
+
+  /* ===================== IBW (McLaren, height-based) ===================== */
+  // McLaren method: IBW = weight-for-height-at-50th-percentile.
+  // Practical implementation widely used at bedside: derive IBW from height
+  // using standard height-based weight curves; here we use the common
+  // height/age-independent approach: find weight-for-stature 50th percentile.
+  // Since we don't have a percentile chart engine, we apply the validated
+  // McLaren formula using height (cm) via the WHO/CDC weight-for-height
+  // 50th-percentile approximation curve for children 2-20y, and the
+  // weight-for-length curve for <2y. This is implemented as a piecewise
+  // approximation widely used in Thai pediatric references.
+
+  function ibwFromHeight(heightCm, ageYearsTotal){
+    if(!heightCm || heightCm <= 0) return null;
+    // Piecewise approximation of 50th percentile weight-for-stature (kg)
+    // based on WHO growth standards, commonly tabulated 45-145 cm range.
+    // For heights outside common pediatric range, formula still applies
+    // as a reasonable estimate per McLaren's height-based method.
+    const h = heightCm;
+    let ibw;
+    if(h <= 103){
+      // infants/toddlers: weight-for-length, roughly cubic relation
+      ibw = (h*h*h) / 1000000 * 1.0 * 95; // approximate calibration
+      // calibrate using known anchor points (50cm~3.3kg, 75cm~9.5kg, 100cm~15.5kg)
+      ibw = quadAnchorIBW(h);
+    } else {
+      ibw = quadAnchorIBW(h);
+    }
+    return Math.round(ibw*10)/10;
+  }
+
+  // Anchor-point interpolation against WHO/CDC 50th-percentile
+  // weight-for-stature reference (cm -> kg), used as the practical
+  // height-based McLaren estimate.
+  const WFH_ANCHORS = [
+    [45,2.6],[50,3.3],[55,4.3],[60,5.6],[65,7.0],[70,8.4],[75,9.5],
+    [80,10.5],[85,11.8],[90,12.8],[95,14.0],[100,15.5],[105,17.0],
+    [110,18.7],[115,20.5],[120,22.4],[125,24.5],[130,26.8],[135,29.5],
+    [140,32.5],[145,36.0],[150,40.0],[155,44.5],[160,49.0],[165,53.5],
+    [170,58.0],[175,62.0],[180,66.0]
+  ];
+  function quadAnchorIBW(h){
+    if(h <= WFH_ANCHORS[0][0]) return WFH_ANCHORS[0][1];
+    if(h >= WFH_ANCHORS[WFH_ANCHORS.length-1][0]) return WFH_ANCHORS[WFH_ANCHORS.length-1][1];
+    for(let i=0;i<WFH_ANCHORS.length-1;i++){
+      const [h1,w1] = WFH_ANCHORS[i];
+      const [h2,w2] = WFH_ANCHORS[i+1];
+      if(h >= h1 && h <= h2){
+        const frac = (h-h1)/(h2-h1);
+        return w1 + frac*(w2-w1);
+      }
+    }
+    return null;
+  }
+
+  function isOverweight(actualWeight, ibw){
+    if(!ibw) return false;
+    return actualWeight > ibw * 1.2; // >120% IBW commonly used threshold
+  }
+
+  /* ===================== Drug dose calc ===================== */
+  function computeDoseForWeight(drug, weightKg){
+    const out = {};
+    const hasMin = drug.doseMin !== null && drug.doseMin !== undefined && drug.doseMin !== "";
+    const hasMax = drug.doseMax !== null && drug.doseMax !== undefined && drug.doseMax !== "";
+    const isPerKg = (drug.unit || "").includes("/kg");
+
+    if(hasMin) out.min = isPerKg ? roundSmart(drug.doseMin * weightKg) : roundSmart(Number(drug.doseMin));
+    if(hasMax) out.max = isPerKg ? roundSmart(drug.doseMax * weightKg) : roundSmart(Number(drug.doseMax));
+
+    let exceeded = false;
+    let cappedMin = out.min, cappedMax = out.max;
+    const absMax = (drug.absMax !== null && drug.absMax !== undefined && drug.absMax !== "") ? Number(drug.absMax) : null;
+
+    if(absMax !== null){
+      if(out.max !== undefined && out.max > absMax){ cappedMax = absMax; exceeded = true; }
+      if(out.min !== undefined && out.min > absMax){ cappedMin = absMax; }
+    }
+
+    return {
+      rawMin: out.min, rawMax: out.max,
+      cappedMin, cappedMax,
+      exceeded, absMax, isPerKg
+    };
+  }
+
+  function roundSmart(n){
+    if(n === undefined || n === null || isNaN(n)) return n;
+    if(n >= 100) return Math.round(n);
+    if(n >= 10) return Math.round(n*10)/10;
+    return Math.round(n*100)/100;
+  }
+
+  function outUnit(unit){
+    // strip the /kg part for the final per-patient unit
+    return unit.replace(/\/kg/, "");
+  }
+
+  /* ===================== Preparation -> mL/tab conversion ===================== */
+  function doseBaseUnit(unit){
+    // returns the mass/amount base unit from a dose unit string, e.g.
+    // "mg/kg/dose" -> "mg", "mcg/kg/min" -> "mcg", "unit/kg/dose" -> "unit"
+    const m = unit.match(/^(mg|mcg|unit|mL)/);
+    return m ? m[1] : null;
+  }
+  function prepBaseUnit(prepUnit){
+    // "mg/mL" -> "mg", "mcg/mL" -> "mcg", "mg/tab" -> "mg"
+    const m = prepUnit.match(/^(mg|mcg|unit)/);
+    return m ? m[1] : null;
+  }
+  function prepDispenseForm(prepUnit){
+    return prepUnit.endsWith("/tab") ? "tab" : "mL";
+  }
+
+  function prepDropdownLabel(pp){
+    if(pp.formType === "powder"){
+      const vialAmt = pp.vialAmt ?? pp.amt;
+      const reconVol = pp.reconVol ?? pp.vol;
+      const combo = pp.name2 ? ` + ${pp.name2} ${fmtNum(pp.vialAmt2 ?? pp.amt2)}` : '';
+      return `${pp.name} (ผง) — ${fmtNum(vialAmt)}${combo} mg/ขวด · ผสม ${fmtNum(reconVol)} mL`;
+    }
+    const combo = pp.name2 ? ` + ${pp.name2} ${fmtNum(pp.amt2)}` : '';
+    return `${pp.name} — ${fmtNum(pp.amt)}${combo} ${pp.unit.split('/')[0]} / ${fmtNum(pp.vol)} ${prepDispenseForm(pp.unit)}`;
+  }
+
+  const UNIT_TO_MG = { mg:1, mcg:0.001 };
+
+  // Given a preparation and a regimen's chosen dose basis ("ing1", "ing2", or
+  // "sum"), returns a view of that preparation where .amt is whichever
+  // quantity the regimen's mg/kg number actually refers to. This lets all
+  // the existing mL-conversion math stay unchanged — it always reads
+  // prep.amt as "the thing the dose is calculated from" — while letting the
+  // person choose, per regimen, whether that's ingredient 1 alone (default,
+  // e.g. Amoxicillin), ingredient 2 alone (e.g. Clavulanic acid), or the sum
+  // of both (e.g. some IV combination protocols dose by total drug content).
+  function effectivePrepForBasis(prep, doseBasis){
+    if(!prep) return prep;
+    const hasIng2 = prep.amt2 !== undefined && prep.amt2 !== null;
+    if(!hasIng2 || !doseBasis || doseBasis === "ing1"){
+      return prep;
+    }
+    if(doseBasis === "ing2"){
+      return {...prep, amt: prep.amt2};
+    }
+    if(doseBasis === "sum"){
+      return {...prep, amt: prep.amt + prep.amt2};
+    }
+    return prep;
+  }
+
+  function convertAmountToMl(amountInDoseUnit, doseUnitBase, prep){
+    if(amountInDoseUnit === undefined || amountInDoseUnit === null) return null;
+    const prepBase = prepBaseUnit(prep.unit);
+    if(!prepBase || !doseUnitBase) return null;
+
+    let amountInPrepBase = amountInDoseUnit;
+
+    if(doseUnitBase !== prepBase){
+      // allow mg<->mcg conversion automatically; unit<->mg is not convertible
+      if(UNIT_TO_MG[doseUnitBase] !== undefined && UNIT_TO_MG[prepBase] !== undefined){
+        // convert dose amount (in doseUnitBase) to mg, then to prepBase
+        const amountInMg = amountInDoseUnit * UNIT_TO_MG[doseUnitBase];
+        amountInPrepBase = amountInMg / UNIT_TO_MG[prepBase];
+      } else {
+        return {incompatible:true};
+      }
+    }
+
+    const volume = (amountInPrepBase / prep.amt) * prep.vol;
+    return {incompatible:false, volume, form: prepDispenseForm(prep.unit)};
+  }
+
+  // Given a dispensing volume (mL or tab) and the ORIGINAL preparation
+  // (untouched amt/amt2, not the basis-adjusted view), returns how much of
+  // each individual ingredient the patient receives at that volume — used
+  // to show "you're giving X mg ingredient 1 AND Y mg ingredient 2" no
+  // matter which one drove the calculation.
+  function ingredientAmountAt(volume, prep, which){
+    if(volume === null || volume === undefined || isNaN(volume)) return null;
+    const amt = which === 2 ? prep.amt2 : prep.amt;
+    if(amt === undefined || amt === null) return null;
+    return (volume / prep.vol) * amt;
+  }
+
+  // Kept for backward compatibility with existing call sites; equivalent to
+  // ingredientAmountAt(volume, prep, 2).
+  function secondIngredientAmount(volume, prep){
+    return ingredientAmountAt(volume, prep, 2);
+  }
+
+  function roundMl(n){
+    if(n === null || n === undefined || isNaN(n)) return n;
+    return Math.round(n*10)/10;
+  }
+
+  /* ===================== Frequency parser ===================== */
+  // Recognizes common prescribing shorthand inside a freeform frequency
+  // string and returns how many doses per day it implies, so a per-day
+  // amount can be split into a per-dose amount. Returns null if nothing
+  // recognizable is found (caller should then just show the per-day amount).
+  function parseDosesPerDay(freqText){
+    if(!freqText) return null;
+    const text = freqText.toLowerCase();
+
+    // q4h / q4-6h / q 4 h / every 4 hours -> doses per day = 24 / hours
+    // for a range like q4-6h, use the longer interval (more conservative => fewer, larger doses)
+    let m = text.match(/q\s*(\d+)\s*(?:-\s*(\d+)\s*)?h/);
+    if(m){
+      const h1 = parseInt(m[1], 10);
+      const h2 = m[2] ? parseInt(m[2], 10) : h1;
+      const hours = Math.max(h1, h2);
+      if(hours > 0) return roundSmart(24 / hours);
+    }
+
+    m = text.match(/every\s*(\d+)\s*(?:-\s*(\d+)\s*)?\s*hour/);
+    if(m){
+      const h1 = parseInt(m[1], 10);
+      const h2 = m[2] ? parseInt(m[2], 10) : h1;
+      const hours = Math.max(h1, h2);
+      if(hours > 0) return roundSmart(24 / hours);
+    }
+
+    // named frequencies: OD/QD (once daily), BID/BD (twice), TID/TDS (three times),
+    // QID/QDS (four times) — check longer/more specific tokens first
+    const named = [
+      {re:/\bq\.?i\.?d\b|\bqds\b/, n:4},
+      {re:/\bt\.?i\.?d\b|\btds\b/, n:3},
+      {re:/\bb\.?i\.?d\b|\bbd\b/, n:2},
+      {re:/\bo\.?d\b|\bqd\b|\bonce\s*daily\b|\bonce\s*a\s*day\b/, n:1},
+    ];
+    for(const {re,n} of named){
+      if(re.test(text)) return n;
+    }
+
+    return null;
+  }
+
+  function freqLabel(freqText){
+    // pulls out just the q-notation / named frequency token for compact display
+    if(!freqText) return "";
+    const text = freqText;
+    let m = text.match(/q\s*\d+\s*(?:-\s*\d+\s*)?h/i);
+    if(m) return m[0];
+    m = text.match(/\b(q\.?i\.?d|qds|t\.?i\.?d|tds|b\.?i\.?d|bd|o\.?d|qd)\b/i);
+    if(m) return m[0].toUpperCase();
+    return "";
+  }
+
+  /* ===================== Rendering: Drug list ===================== */
+  const drugListEl = document.getElementById("drugList");
+  const searchInput = document.getElementById("searchDrug");
+
+  function renderDrugList(){
+    const q = searchInput.value.trim().toLowerCase();
+    let filtered = state.drugs.filter(d =>
+      d.name.toLowerCase().includes(q) || (d.category||"").toLowerCase().includes(q)
+    );
+    // sort alphabetically A-Z by name
+    filtered = filtered.sort((a,b)=> a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+
+    if(filtered.length === 0){
+      drugListEl.innerHTML = `
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2v4M15 2v4M4 10h16M5 6h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1z"/></svg>
+          <div>${state.drugs.length === 0 ? "ยังไม่มีรายการยา เริ่มเพิ่มยาแรกของคุณ" : "ไม่พบยาที่ค้นหา"}</div>
+        </div>`;
+      return;
+    }
+
+    drugListEl.innerHTML = filtered.map(d => `
+      <div class="drug-item ${d.id===state.selectedDrugId?'active':''}" data-id="${d.id}">
+        <div>
+          <span class="d-name">${escapeHtml(d.name)}</span>
+          <span class="d-cat">${escapeHtml(d.category||'')}${(d.regimens && d.regimens.length>1) ? ` · ${d.regimens.length} regimens` : ''}</span>
+        </div>
+        <div class="d-actions">
+          <button class="icon-btn dup-btn" data-id="${d.id}" title="ทำสำเนายานี้" aria-label="ทำสำเนา ${escapeHtml(d.name)}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+          <button class="icon-btn edit-btn" data-id="${d.id}" title="แก้ไข" aria-label="แก้ไข ${escapeHtml(d.name)}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 113 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="icon-btn del-btn" data-id="${d.id}" title="ลบ" aria-label="ลบ ${escapeHtml(d.name)}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6h16z"/></svg>
+          </button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  }
+
+  drugListEl.addEventListener("click", (e)=>{
+    const editBtn = e.target.closest(".edit-btn");
+    const delBtn = e.target.closest(".del-btn");
+    const dupBtn = e.target.closest(".dup-btn");
+    const item = e.target.closest(".drug-item");
+
+    if(editBtn){
+      openDrugModal(editBtn.dataset.id);
+      return;
+    }
+    if(dupBtn){
+      const drug = state.drugs.find(d=>d.id===dupBtn.dataset.id);
+      if(drug){
+        const copy = JSON.parse(JSON.stringify(drug));
+        copy.id = uid();
+        copy.name = drug.name + " (สำเนา)";
+        copy.regimens.forEach(r => r.id = uid());
+        state.drugs.push(copy);
+        saveDrugs();
+        renderDrugList();
+        showToast("ทำสำเนายาแล้ว — แก้ไขชื่อ/รายละเอียดได้เลย");
+        openDrugModal(copy.id);
+      }
+      return;
+    }
+    if(delBtn){
+      const drug = state.drugs.find(d=>d.id===delBtn.dataset.id);
+      if(drug && confirm(`ลบ "${drug.name}" ออกจากรายการ?`)){
+        state.drugs = state.drugs.filter(d=>d.id!==delBtn.dataset.id);
+        if(state.selectedDrugId === delBtn.dataset.id) state.selectedDrugId = null;
+        saveDrugs();
+        renderDrugList();
+        renderResult();
+        showToast("ลบยาแล้ว");
+      }
+      return;
+    }
+    if(item){
+      state.selectedDrugId = item.dataset.id;
+      state.selectedPrepIndex = 0;
+      state.selectedRegimenIndex = 0;
+      state.renalPanelOpen = false;
+      state.renalPickerGroupIdx = 0;
+      state.renalPickerBracketIdx = 0;
+      renderDrugList();
+      renderResult();
+    }
+  });
+
+  searchInput.addEventListener("input", renderDrugList);
+
+  /* ===================== Patient panel rendering ===================== */
+  const ageYearsInput = document.getElementById("ageYears");
+  const ageMonthsInput = document.getElementById("ageMonths");
+  const weightInput = document.getElementById("weight");
+  const heightInput = document.getElementById("height");
+  const ageDisplay = document.getElementById("ageDisplay");
+  const ibwBox = document.getElementById("ibwBox");
+
+  function getPatient(){
+    const years = parseInt(ageYearsInput.value, 10);
+    const months = parseInt(ageMonthsInput.value, 10);
+    const age = buildAge(isNaN(years) ? 0 : years, isNaN(months) ? 0 : months);
+    const weight = parseFloat(weightInput.value);
+    const height = parseFloat(heightInput.value);
+    const ageMonths = parseAgeRange(age ? age.years : null, age ? age.months : null);
+    return {
+      age,
+      ageMonths,
+      weight: isNaN(weight) ? null : weight,
+      height: isNaN(height) ? null : height
+    };
+  }
+
+  function renderPatientPanel(){
+    const p = getPatient();
+
+    if(p.age){
+      ageDisplay.classList.add("show");
+      ageDisplay.innerHTML = `อายุ: <b>${ageLabel(p.age)}</b>`;
+    } else {
+      ageDisplay.classList.remove("show");
+    }
+
+    if(p.weight && p.height){
+      const ibw = ibwFromHeight(p.height, p.age ? p.age.years : null);
+      if(ibw){
+        const over = isOverweight(p.weight, ibw);
+        ibwBox.classList.add("show");
+        ibwBox.innerHTML = `
+          ${over ? `<div class="ibw-flag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+            น้ำหนักเกิน IBW มากกว่า 20% — พิจารณาใช้ IBW ในการคำนวณ
+          </div>` : ''}
+          <div>Ideal Body Weight (McLaren, height-based)</div>
+          <div class="ibw-val">${ibw} kg</div>
+          <div style="margin-top:4px;">น้ำหนักจริง ${p.weight} kg = ${Math.round((p.weight/ibw)*100)}% ของ IBW</div>
+        `;
+      } else {
+        ibwBox.classList.remove("show");
+      }
+    } else {
+      ibwBox.classList.remove("show");
+    }
+
+    renderResult();
+  }
+
+  [ageYearsInput, ageMonthsInput, weightInput, heightInput].forEach(el=>{
+    el.addEventListener("input", renderPatientPanel);
+  });
+
+  /* ===================== Result rendering ===================== */
+  const resultStage = document.getElementById("resultStage");
+
+  function renderResult(){
+    const drug = state.drugs.find(d=>d.id===state.selectedDrugId);
+    const p = getPatient();
+
+    if(!drug){
+      resultStage.innerHTML = `
+        <div class="result-empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          <div class="big">เลือกยาจากรายการด้านซ้าย</div>
+          <div>เพื่อคำนวณขนาดยาสำหรับผู้ป่วย</div>
+        </div>`;
+      return;
+    }
+
+    const regimens = drug.regimens || [];
+    if(state.selectedRegimenIndex >= regimens.length) state.selectedRegimenIndex = 0;
+    if(p.age){
+      const matchIdx = findAgeMatchedRegimenIndex(drug, p.age);
+      if(matchIdx !== null && matchIdx !== state.selectedRegimenIndex){
+        state.selectedRegimenIndex = matchIdx;
+      }
+    }
+    const regimen = regimens[state.selectedRegimenIndex];
+
+    if(!regimen){
+      resultStage.innerHTML = `
+        <div class="result-empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          <div class="big">ยานี้ยังไม่มีข้อบ่งใช้</div>
+          <div>แก้ไขยาเพื่อเพิ่มขนาดยา</div>
+        </div>`;
+      return;
+    }
+
+    const regimenSelectHtml = regimens.length > 1 ? `
+      <div class="prep-select-wrap" style="margin-bottom:14px;">
+        <label for="regimenSelect">ข้อบ่งใช้ / เงื่อนไข</label>
+        <select id="regimenSelect">
+          ${regimens.map((r,i)=>`<option value="${i}" ${i===state.selectedRegimenIndex?'selected':''}>${escapeHtml(r.name)}${r.ageMinMonths!=null||r.ageMaxMonths!=null?` · ${escapeHtml(regimenAgeLabel(r))}`:''}</option>`).join('')}
+        </select>
+      </div>` : '';
+
+    const requiresWeight = regimen.unit.includes("/kg");
+    if(requiresWeight && !p.weight){
+      resultStage.innerHTML = `
+        ${regimenSelectHtml}
+        <div class="result-empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          <div class="big">กรอกน้ำหนักผู้ป่วย</div>
+          <div>เพื่อคำนวณขนาดยา <b>${escapeHtml(drug.name)}</b></div>
+        </div>`;
+      wireRegimenSelect();
+      return;
+    }
+
+    const ibw = (p.height) ? ibwFromHeight(p.height, p.age?p.age.years:null) : null;
+    const over = ibw ? isOverweight(p.weight, ibw) : false;
+
+    // determine which weight basis to show as primary
+    let basis = state.basisMode;
+    if(basis === "auto") basis = over ? "ibw" : "actual";
+    if(basis === "ibw" && !ibw) basis = "actual";
+
+    const activeWeight = basis === "ibw" ? ibw : p.weight;
+    const calc = computeDoseForWeight(regimen, activeWeight);
+    const unit = outUnit(regimen.unit);
+    const doseUnitBase = doseBaseUnit(regimen.unit);
+
+    const preps = drug.preps || [];
+    if(state.selectedPrepIndex >= preps.length) state.selectedPrepIndex = 0;
+    const activePrep = preps[state.selectedPrepIndex] || null;
+
+    // If the regimen's unit is a /day unit (e.g. mg/kg/day), the calculated
+    // mg amount is a DAILY total — split it into a per-dose amount using the
+    // frequency text (q8h, OD, BID, etc.) so the displayed mL is what's
+    // actually drawn up and given at each administration, not the whole day.
+    const isPerDayUnit = regimen.unit.includes("/day");
+    const dosesPerDay = isPerDayUnit ? parseDosesPerDay(regimen.freq) : null;
+    const freqTag = freqLabel(regimen.freq);
+
+    let prepSelectHtml = "";
+    let mlCardsHtml = "";
+    let mlStepsRows = [];
+    let comboCardsHtml = "";
+
+    if(preps.length > 0 && activePrep){
+      const doseBasis = regimen.doseBasis || "ing1";
+      const effectivePrep = effectivePrepForBasis(activePrep, doseBasis);
+      const hasCombo = activePrep.amt2 !== undefined && activePrep.amt2 !== null;
+      const basisLabel = doseBasis === "ing2" ? (activePrep.name2 || "ตัวยาที่ 2")
+                        : doseBasis === "sum" ? `${activePrep.name} + ${activePrep.name2 || 'ตัวยาที่ 2'} (รวม)`
+                        : activePrep.name;
+
+      prepSelectHtml = `
+        <div class="prep-select-wrap">
+          <label for="prepSelect">รูปแบบยาที่ใช้คำนวณ mL</label>
+          <select id="prepSelect">
+            ${preps.map((pp,i)=>`<option value="${i}" ${i===state.selectedPrepIndex?'selected':''}>${escapeHtml(prepDropdownLabel(pp))}</option>`).join('')}
+          </select>
+        </div>
+        ${activePrep.formType === "powder" ? `
+          <div class="hint" style="margin-bottom:14px; background:var(--amber-bg); border:1px solid #E9CCA0; border-radius:7px; padding:8px 10px; color:#8a5a1d;">
+            ผงผสมยา: ${fmtNum(activePrep.vialAmt ?? activePrep.amt)} mg/ขวด ผสมกับ diluent ${fmtNum(activePrep.reconVol ?? activePrep.vol)} mL → ความเข้มข้น ${fmtNum(roundSmart((activePrep.vialAmt ?? activePrep.amt)/(activePrep.reconVol ?? activePrep.vol)))} mg/mL — แก้ไขปริมาตรผสมได้ในหน้าแก้ไขยา
+          </div>
+        ` : ''}
+        ${hasCombo ? `
+          <div class="hint" style="margin-bottom:14px;">คำนวณขนาดยาจาก: <b>${escapeHtml(basisLabel)}</b> — เปลี่ยนได้ในหน้าแก้ไขยา (ข้อบ่งใช้นี้)</div>
+        ` : ''}`;
+
+      const convMinDaily = calc.cappedMin !== undefined ? convertAmountToMl(calc.cappedMin, doseUnitBase, effectivePrep) : null;
+      const convMaxDaily = calc.cappedMax !== undefined ? convertAmountToMl(calc.cappedMax, doseUnitBase, effectivePrep) : null;
+      const incompatible = (convMinDaily && convMinDaily.incompatible) || (convMaxDaily && convMaxDaily.incompatible);
+
+      if(incompatible){
+        mlCardsHtml = `
+          <div class="dose-card danger">
+            <div class="label">แปลงเป็น ${prepDispenseForm(activePrep.unit)} ไม่ได้</div>
+            <div class="value" style="font-size:14px;">หน่วยยา (${doseUnitBase}) ไม่ตรงกับหน่วยรูปแบบยา (${prepBaseUnit(activePrep.unit)})</div>
+          </div>`;
+      } else {
+        const form = prepDispenseForm(activePrep.unit);
+
+        // decide whether we can/should show a per-dose figure
+        const canSplit = isPerDayUnit && dosesPerDay;
+        const convMin = convMinDaily;
+        const convMax = convMaxDaily;
+        const perDoseMin = (canSplit && convMin && convMin.volume != null) ? convMin.volume / dosesPerDay : null;
+        const perDoseMax = (canSplit && convMax && convMax.volume != null) ? convMax.volume / dosesPerDay : null;
+
+        if(canSplit){
+          // PER-DOSE cards (primary, what the nurse actually draws up each time)
+          if(perDoseMin !== null){
+            mlCardsHtml += `
+              <div class="dose-card ml-card">
+                <div class="label">ปริมาตรต่อครั้ง (ต่ำสุด)</div>
+                <div class="value">${fmtNum(roundMl(perDoseMin))} <small>${form}</small></div>
+                <div class="ml-exact" style="color:#BFE0DB;">ต่อวัน ${fmtNum(roundMl(convMin.volume))} ${form} ÷ ${dosesPerDay} ครั้ง</div>
+              </div>`;
+          }
+          if(perDoseMax !== null){
+            mlCardsHtml += `
+              <div class="dose-card ml-card">
+                <div class="label">ปริมาตรต่อครั้ง (สูงสุด)</div>
+                <div class="value">${fmtNum(roundMl(perDoseMax))} <small>${form}</small></div>
+                <div class="ml-exact" style="color:#BFE0DB;">ต่อวัน ${fmtNum(roundMl(convMax.volume))} ${form} ÷ ${dosesPerDay} ครั้ง</div>
+              </div>`;
+          }
+        } else {
+          // fall back to showing the raw converted amount (already per-dose if
+          // the unit was mg/kg/dose, or per-day with no recognizable frequency
+          // to split by — in which case we say so explicitly)
+          if(convMin && convMin.volume !== null){
+            mlCardsHtml += `
+              <div class="dose-card ml-card">
+                <div class="label">ปริมาตร${isPerDayUnit?'รวมต่อวัน':''}ต่ำสุด</div>
+                <div class="value">${fmtNum(roundMl(convMin.volume))} <small>${form}</small></div>
+                <div class="ml-exact" style="color:#BFE0DB;">จาก ${fmtNum(calc.cappedMin)} ${unit.split('/')[0]}</div>
+              </div>`;
+          }
+          if(convMax && convMax.volume !== null){
+            mlCardsHtml += `
+              <div class="dose-card ml-card">
+                <div class="label">ปริมาตร${isPerDayUnit?'รวมต่อวัน':''}สูงสุด</div>
+                <div class="value">${fmtNum(roundMl(convMax.volume))} <small>${form}</small></div>
+                <div class="ml-exact" style="color:#BFE0DB;">จาก ${fmtNum(calc.cappedMax)} ${unit.split('/')[0]}</div>
+              </div>`;
+          }
+          if(isPerDayUnit && !dosesPerDay){
+            mlCardsHtml += `
+              <div class="hint" style="grid-column:1/-1;">ไม่พบความถี่ที่ระบบเข้าใจในช่อง "ความถี่" (เช่น q8h, OD, BID) จึงยังไม่แบ่งเป็นต่อครั้งให้ — เพิ่มความถี่ในข้อบ่งใช้เพื่อให้ระบบแบ่งให้อัตโนมัติ</div>`;
+          }
+        }
+
+        // step-by-step trace
+        const exampleConv = convMax && convMax.volume != null ? convMax : convMin;
+        const exampleCapped = convMax && convMax.volume != null ? calc.cappedMax : calc.cappedMin;
+        if(exampleConv && exampleConv.volume != null){
+          mlStepsRows.push(stepLine(`${basisLabel}: ${fmtNum(effectivePrep.amt)} ${activePrep.unit.split('/')[0]} ต่อ ${fmtNum(activePrep.vol)} ${form}`, `${fmtNum(exampleCapped)} ${unit.split('/')[0]} ÷ ${fmtNum(effectivePrep.amt)} × ${fmtNum(activePrep.vol)} = ${fmtNum(roundMl(exampleConv.volume))} ${form}${isPerDayUnit?'/วัน':''}`));
+          if(canSplit){
+            const perDoseEx = exampleConv.volume / dosesPerDay;
+            mlStepsRows.push(stepLine(`แบ่งให้ตามความถี่ (${freqTag || regimen.freq} = ${dosesPerDay} ครั้ง/วัน)`, `${fmtNum(roundMl(exampleConv.volume))} ÷ ${dosesPerDay} = ${fmtNum(roundMl(perDoseEx))} ${form}/ครั้ง`));
+          }
+        }
+
+        // combination-drug breakdown: show BOTH ingredients individually at
+        // the resulting volume, regardless of which one drove the calc, so
+        // it's always clear exactly how much of each the patient receives.
+        if(hasCombo){
+          const refVolumePerDose = canSplit ? (perDoseMax ?? perDoseMin) : (convMax && convMax.volume != null ? convMax.volume : convMin?.volume);
+          const amt1AtVol = ingredientAmountAt(refVolumePerDose, activePrep, 1);
+          const amt2AtVol = ingredientAmountAt(refVolumePerDose, activePrep, 2);
+          const perLabel = canSplit ? 'ต่อครั้ง' : '';
+
+          if(amt1AtVol !== null){
+            comboCardsHtml += `
+              <div class="dose-card" style="border-color:#C9D6D1;">
+                <div class="label">${escapeHtml(activePrep.name)} ${perLabel} ${doseBasis==='ing1'?'(ใช้คำนวณ)':''}</div>
+                <div class="value" style="color:var(--teal-deep);">${fmtNum(roundSmart(amt1AtVol))} <small>mg</small></div>
+              </div>`;
+          }
+          if(amt2AtVol !== null){
+            comboCardsHtml += `
+              <div class="dose-card" style="border-color:#C9D6D1;">
+                <div class="label">${escapeHtml(activePrep.name2)} ${perLabel} ${doseBasis==='ing2'?'(ใช้คำนวณ)':''}</div>
+                <div class="value" style="color:var(--teal-deep);">${fmtNum(roundSmart(amt2AtVol))} <small>mg</small></div>
+              </div>`;
+          }
+          if(doseBasis === 'sum' && amt1AtVol !== null && amt2AtVol !== null){
+            comboCardsHtml += `
+              <div class="dose-card" style="border-color:#C9D6D1;">
+                <div class="label">รวมทั้งสองตัว ${perLabel} (ใช้คำนวณ)</div>
+                <div class="value" style="color:var(--teal-deep);">${fmtNum(roundSmart(amt1AtVol+amt2AtVol))} <small>mg</small></div>
+              </div>`;
+          }
+          if(amt2AtVol !== null){
+            mlStepsRows.push(stepLine(`${activePrep.name2} ในปริมาตรเดียวกัน`, `${fmtNum(roundMl(refVolumePerDose))} ${form} ÷ ${fmtNum(activePrep.vol)} × ${fmtNum(activePrep.amt2)} = ${fmtNum(roundSmart(amt2AtVol))} mg`));
+          }
+        }
+      }
+    }
+
+    let toggleHtml = "";
+    if(ibw && calc.isPerKg){
+      toggleHtml = `
+        <div class="toggle-basis">
+          <button data-basis="actual" class="${basis==='actual'?'sel':''}">น้ำหนักจริง</button>
+          <button data-basis="ibw" class="${basis==='ibw'?'sel':''}">IBW</button>
+        </div>`;
+    }
+
+    let warningHtml = "";
+    const ageWarning = p.age ? (
+      regimen.ageBased && regimen.ageMinMonths != null && p.age.totalMonths < regimen.ageMinMonths ?
+        `<div class="max-warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg><div>ไม่ควรให้ยานี้ในเด็กอายุต่ำกว่า ${formatAgeMonths(regimen.ageMinMonths)}</div></div>` :
+      regimen.ageBased && regimen.ageMaxMonths != null && p.age.totalMonths > regimen.ageMaxMonths ?
+        `<div class="max-warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg><div>ไม่ควรให้ยานี้ในเด็กอายุมากกว่า ${formatAgeMonths(regimen.ageMaxMonths)}</div></div>` :
+      ""
+    ) : "";
+    if(calc.exceeded){
+      warningHtml = `
+        <div class="max-warning">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+          <div>ขนาดยาที่คำนวณได้เกิน absolute max (${calc.absMax} ${regimen.absMaxUnit||''}) — ระบบปรับให้ไม่เกินค่าสูงสุดแล้ว ตรวจสอบก่อนสั่งใช้จริง</div>
+        </div>`;
+    }
+    warningHtml = ageWarning || warningHtml;
+
+    const doseCards = [];
+    if(calc.cappedMin !== undefined){
+      doseCards.push(`
+        <div class="dose-card">
+          <div class="label">ขนาดต่ำสุด</div>
+          <div class="value">${fmtNum(calc.cappedMin)} <small>${unit.split('/')[0]}</small></div>
+        </div>`);
+    }
+    if(calc.cappedMax !== undefined){
+      doseCards.push(`
+        <div class="dose-card ${calc.exceeded?'flag':''}">
+          <div class="label">ขนาดสูงสุด</div>
+          <div class="value">${fmtNum(calc.cappedMax)} <small>${unit.split('/')[0]}</small></div>
+        </div>`);
+    }
+    if(calc.isPerKg){
+      doseCards.push(`
+          <div class="dose-card">
+            <div class="label">น้ำหนักที่ใช้คำนวณ</div>
+            <div class="value">${fmtNum(activeWeight)} <small>kg</small></div>
+          </div>`);
+    }
+
+    let stepsRows = [];
+    if(calc.isPerKg){
+      stepsRows.push(stepLine("น้ำหนักผู้ป่วย (actual)", `${fmtNum(p.weight)} kg`));
+      if(ibw) stepsRows.push(stepLine("Ideal Body Weight (McLaren)", `${fmtNum(ibw)} kg`));
+      stepsRows.push(stepLine("น้ำหนักที่เลือกใช้คำนวณ", `${fmtNum(activeWeight)} kg (${basis==='ibw'?'IBW':'น้ำหนักจริง'})`));
+      if(calc.rawMin !== undefined) stepsRows.push(stepLine(`${regimen.doseMin} ${regimen.unit} × ${fmtNum(activeWeight)} kg`, `${fmtNum(calc.rawMin)} ${unit.split('/')[0]}`));
+      if(calc.rawMax !== undefined) stepsRows.push(stepLine(`${regimen.doseMax} ${regimen.unit} × ${fmtNum(activeWeight)} kg`, `${fmtNum(calc.rawMax)} ${unit.split('/')[0]}`));
+    } else {
+      stepsRows.push(stepLine("รูปแบบขนาดยา", `ขนาดคงที่ (ไม่ขึ้นกับน้ำหนัก) — ${regimen.unit}`));
+    }
+    if(calc.exceeded) stepsRows.push(stepLine("ปรับตาม absolute max", `${calc.absMax} ${regimen.absMaxUnit}`));
+    stepsRows.push(stepLine("ผลลัพธ์สุดท้าย", `${fmtNum(calc.cappedMin ?? '')}${calc.cappedMin!==undefined && calc.cappedMax!==undefined?' – ':''}${fmtNum(calc.cappedMax ?? '')} ${unit.split('/')[0]} ${regimen.freq?('· '+escapeHtml(regimen.freq)):''}`));
+    stepsRows = stepsRows.concat(mlStepsRows);
+
+    resultStage.innerHTML = `
+      <div class="res-head">
+        <div>
+          <span class="name">${escapeHtml(drug.name)}</span>
+          ${drug.category?`<span class="cat-pill">${escapeHtml(drug.category)}</span>`:''}
+          ${(drug.renalAdjust && drug.renalAdjust.length > 0) ? `
+            <span class="renal-badge" id="renalBadgeToggle" title="คลิกเพื่อดูคำแนะนำการปรับขนาดยาตามไต">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8 6 5 10.5 5 14a7 7 0 0014 0c0-3.5-3-8-7-12z"/></svg>
+              ปรับตาม CrCl
+            </span>` : ''}
+          ${drug.source?`<div class="src">อ้างอิง: ${escapeHtml(drug.source)}</div>`:''}
+        </div>
+        ${toggleHtml}
+      </div>
+
+      ${buildRenalPanelHtml(drug.renalAdjust)}
+
+      ${regimenSelectHtml}
+
+      ${warningHtml}
+
+      <div class="dose-grid">
+        ${doseCards.join("")}
+      </div>
+
+      ${regimen.freq ? `<div class="hint" style="margin-bottom:16px; font-size:13px;"><b>ความถี่:</b> ${escapeHtml(regimen.freq)}${freqTag ? ` <span class="cat-pill" style="margin-left:4px;">${escapeHtml(freqTag)}</span>` : ''}</div>` : ''}
+
+      ${preps.length > 0 ? `
+        <div style="border-top:1px dashed var(--sage-line); padding-top:16px; margin-bottom:16px;">
+          ${prepSelectHtml}
+          <div class="dose-grid">
+            ${mlCardsHtml}
+            ${comboCardsHtml}
+          </div>
+        </div>
+      ` : `
+        <div class="hint" style="margin-bottom:16px;">ยังไม่มีรูปแบบยา (preparation) สำหรับยานี้ — แก้ไขยาเพื่อเพิ่มความเข้มข้น แล้วระบบจะคำนวณ mL ให้อัตโนมัติ</div>
+      `}
+
+      <div class="steps">
+        <h3>วิธีคำนวณ</h3>
+        ${stepsRows.join("")}
+      </div>
+
+      ${regimen.notes ? `<div class="notes-box"><b>หมายเหตุ</b>${escapeHtml(regimen.notes)}</div>` : ''}
+    `;
+
+    resultStage.querySelectorAll(".toggle-basis button").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        state.basisMode = btn.dataset.basis;
+        renderResult();
+      });
+    });
+
+    const prepSelectEl = document.getElementById("prepSelect");
+    if(prepSelectEl){
+      prepSelectEl.addEventListener("change", (e)=>{
+        state.selectedPrepIndex = parseInt(e.target.value);
+        renderResult();
+      });
+    }
+    wireRegimenSelect();
+
+    const renalBadge = document.getElementById("renalBadgeToggle");
+    if(renalBadge){
+      renalBadge.addEventListener("click", ()=>{
+        state.renalPanelOpen = !state.renalPanelOpen;
+        renderResult();
+      });
+    }
+    wireRenalPanel();
+  }
+
+  function wireRegimenSelect(){
+    const regimenSelectEl = document.getElementById("regimenSelect");
+    if(regimenSelectEl){
+      regimenSelectEl.addEventListener("change", (e)=>{
+        state.selectedRegimenIndex = parseInt(e.target.value);
+        state.selectedPrepIndex = 0;
+        renderResult();
+      });
+    }
+  }
+
+  function stepLine(lbl, val){
+    return `<div class="step-line"><span class="lbl">${lbl}</span><span class="val">${val}</span></div>`;
+  }
+
+  function fmtNum(n){
+    if(n === undefined || n === null || n === '') return '–';
+    if(typeof n !== 'number') return n;
+    return n % 1 === 0 ? n.toString() : n.toString();
+  }
+
+  /* ===================== Renal (CrCl) adjustment panel ===================== */
+  function buildRenalPanelHtml(renalAdjust){
+    if(!renalAdjust || renalAdjust.length === 0) return "";
+    if(!state.renalPanelOpen) return "";
+
+    const modeToggle = `
+      <div class="renal-mode-toggle">
+        <button data-renalmode="list" class="${state.renalPanelMode==='list'?'sel':''}">แสดงทั้งหมด</button>
+        <button data-renalmode="picker" class="${state.renalPanelMode==='picker'?'sel':''}">เลือกช่วง CrCl</button>
+      </div>`;
+
+    let body = "";
+    if(state.renalPanelMode === "list"){
+      body = renalAdjust.map(g => `
+        <div class="renal-group">
+          <div class="renal-group-title">${escapeHtml(g.label)}</div>
+          ${g.brackets.map(b => `
+            <div class="renal-bracket-row">
+              <span class="crcl-range">${escapeHtml(b.range)}</span>
+              <span>${escapeHtml(b.text)}</span>
+            </div>
+          `).join("")}
+        </div>
+      `).join("");
+    } else {
+      if(state.renalPickerGroupIdx >= renalAdjust.length) state.renalPickerGroupIdx = 0;
+      const activeGroup = renalAdjust[state.renalPickerGroupIdx];
+      if(state.renalPickerBracketIdx >= activeGroup.brackets.length) state.renalPickerBracketIdx = 0;
+      const activeBracket = activeGroup.brackets[state.renalPickerBracketIdx];
+
+      body = `
+        <div class="renal-picker-select row2">
+          <div>
+            <label style="font-size:11px; color:#8a5a1d;">เส้นทางการให้ยา</label>
+            <select id="renalGroupPick">
+              ${renalAdjust.map((g,i)=>`<option value="${i}" ${i===state.renalPickerGroupIdx?'selected':''}>${escapeHtml(g.label)}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px; color:#8a5a1d;">ช่วง CrCl ของผู้ป่วย</label>
+            <select id="renalBracketPick">
+              ${activeGroup.brackets.map((b,i)=>`<option value="${i}" ${i===state.renalPickerBracketIdx?'selected':''}>${escapeHtml(b.range)}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="renal-result-box">
+          <span class="crcl-range">${escapeHtml(activeGroup.label)} · ${escapeHtml(activeBracket.range)}</span>
+          ${escapeHtml(activeBracket.text)}
+        </div>`;
+    }
+
+    return `
+      <div class="renal-panel">
+        <div class="renal-panel-head">
+          <div class="title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8 6 5 10.5 5 14a7 7 0 0014 0c0-3.5-3-8-7-12z"/></svg>
+            ยานี้ต้องปรับขนาดตามการทำงานของไต (CrCl)
+          </div>
+          ${modeToggle}
+        </div>
+        ${body}
+      </div>`;
+  }
+
+  function wireRenalPanel(){
+    document.querySelectorAll("[data-renalmode]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        state.renalPanelMode = btn.dataset.renalmode;
+        renderResult();
+      });
+    });
+    const groupPick = document.getElementById("renalGroupPick");
+    if(groupPick){
+      groupPick.addEventListener("change", e=>{
+        state.renalPickerGroupIdx = parseInt(e.target.value);
+        state.renalPickerBracketIdx = 0;
+        renderResult();
+      });
+    }
+    const bracketPick = document.getElementById("renalBracketPick");
+    if(bracketPick){
+      bracketPick.addEventListener("change", e=>{
+        state.renalPickerBracketIdx = parseInt(e.target.value);
+        renderResult();
+      });
+    }
+  }
+
+  /* ===================== Add/Edit Drug Modal ===================== */
+  const drugModalBackdrop = document.getElementById("drugModalBackdrop");
+  const drugModalTitle = document.getElementById("drugModalTitle");
+  const prepListEl = document.getElementById("prepList");
+  const regimenListEl = document.getElementById("regimenList");
+  let editingPreps = []; // working copy of preparations while modal is open
+  let editingRegimens = []; // working copy of regimens while modal is open
+  let editingRenal = []; // working copy of renal-adjustment groups while modal is open
+
+  const PREP_UNITS = [
+    {value:"mg/mL", label:"mg / mL"},
+    {value:"mcg/mL", label:"mcg / mL"},
+    {value:"unit/mL", label:"unit / mL"},
+    {value:"mg/tab", label:"mg / เม็ด"},
+    {value:"mcg/tab", label:"mcg / เม็ด"},
+    {value:"__custom__", label:"หรือพิมพ์หน่วยเอง"},
+  ];
+
+  const UNIT_OPTIONS = [
+    {value:"mg/kg/dose", label:"mg/kg/dose"},
+    {value:"mg/kg/day", label:"mg/kg/day"},
+    {value:"mcg/kg/dose", label:"mcg/kg/dose"},
+    {value:"mcg/kg/day", label:"mcg/kg/day"},
+    {value:"mcg/kg/min", label:"mcg/kg/min"},
+    {value:"unit/kg/dose", label:"unit/kg/dose"},
+    {value:"mL/kg/dose", label:"mL/kg/dose"},
+    {value:"mg/dose", label:"mg/dose (ไม่คิดตามน้ำหนัก)"},
+    {value:"mcg/dose", label:"mcg/dose (ไม่คิดตามน้ำหนัก)"},
+    {value:"unit/dose", label:"unit/dose (ไม่คิดตามน้ำหนัก)"},
+    {value:"__custom__", label:"หรือพิมพ์หน่วยเอง"},
+  ];
+  const ABSMAX_UNIT_OPTIONS = [
+    {value:"mg/dose", label:"mg/dose"},
+    {value:"mg/day", label:"mg/day"},
+    {value:"mg/kg/day", label:"mg/kg/day"},
+    {value:"mcg/dose", label:"mcg/dose"},
+    {value:"mcg/day", label:"mcg/day"},
+    {value:"mcg/kg/day", label:"mcg/kg/day"},
+    {value:"unit/dose", label:"unit/dose"},
+    {value:"mL/dose", label:"mL/dose"},
+    {value:"", label:"ไม่มี"},
+    {value:"__custom__", label:"หรือพิมพ์หน่วยเอง"},
+  ];
+  const UNIT_VALUES = UNIT_OPTIONS.map(u=>u.value);
+  const ABSMAX_UNIT_VALUES = ABSMAX_UNIT_OPTIONS.map(u=>u.value);
+
+  function renderPrepList(){
+    if(editingPreps.length === 0){
+      prepListEl.innerHTML = `<div class="hint">ยังไม่มีรูปแบบยา — กด "+ เพิ่มรูปแบบยา" ด้านล่าง</div>`;
+      return;
+    }
+    prepListEl.innerHTML = editingPreps.map((p, i) => {
+      const isPowder = p.formType === "powder";
+      return `
+      <div class="prep-row" data-idx="${i}">
+        <input type="text" class="prep-name" placeholder="ชื่อรูปแบบ เช่น Suspension" value="${escapeHtml(p.name||'')}">
+
+        <div class="prep-form-toggle">
+          <button type="button" class="prep-form-btn ${!isPowder?'sel':''}" data-form="liquid">Ready to Use</button>
+          <button type="button" class="prep-form-btn ${isPowder?'sel':''}" data-form="powder">ผงผสมยา (vial)</button>
+        </div>
+
+        ${!isPowder ? `
+          <input type="text" inputmode="decimal" class="prep-amt" placeholder="400" value="${escapeHtml(p.amt ?? '')}">
+          <span class="prep-x">ต่อ</span>
+          <input type="text" inputmode="decimal" class="prep-vol" placeholder="5" value="${escapeHtml(p.vol ?? '')}">
+          <div style="display:flex; gap:8px; align-items:center;">
+            <select class="prep-unit">
+              ${PREP_UNITS.map(u=>`<option value="${u.value}" ${p.unit===u.value?'selected':''}>${u.label}</option>`).join('')}
+            </select>
+            <input type="text" class="prep-unit-custom" style="${(p.customUnit||p.unit)==='__custom__' || (p.customUnit||'') ? '' : 'display:none;'}" placeholder="หรือพิมพ์หน่วยเอง เช่น mg/puff" value="${escapeHtml(p.customUnit||'')}">
+          </div>
+        ` : `
+          <input type="text" inputmode="decimal" class="prep-amt" placeholder="500" value="${escapeHtml(p.amt ?? '')}">
+          <span class="prep-x">mg ต่อ 1 ขวด</span>
+          <div></div>
+          <div></div>
+        `}
+
+        <button type="button" class="prep-del" data-idx="${i}" title="ลบรูปแบบนี้">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6h16z"/></svg>
+        </button>
+        ${isPowder ? `<div class="prep-unit-custom-spacer"></div>` : ''}
+
+        ${isPowder ? `
+          <div class="prep-recon-row">
+            <label>ปริมาตรที่ผสม (diluent) — แก้ไขได้ตามฉลากยาจริง</label>
+            <div class="prep-recon-input-wrap">
+              <input type="text" inputmode="decimal" class="prep-reconvol" placeholder="เช่น 10" value="${escapeHtml(p.reconVol ?? '')}">
+              <span>mL</span>
+            </div>
+            <div class="prep-recon-result">${(p.amt && p.reconVol) ? `≈ ${roundSmart(parseFloat(p.amt)/parseFloat(p.reconVol))} mg/mL หลังผสม` : 'กรอก mg/ขวด และปริมาตรผสมเพื่อดูความเข้มข้นที่ได้'}</div>
+          </div>
+        ` : ''}
+
+        <label class="prep-combo-toggle">
+          <input type="checkbox" class="prep-has-combo" ${p.name2 || p.amt2 ? 'checked' : ''}>
+          ยาผสม 2 ตัว (เช่น Amoxicillin + Clavulanic acid)
+        </label>
+        <div class="prep-combo-fields" style="${(p.name2 || p.amt2) ? '' : 'display:none;'}">
+          <input type="text" class="prep-name2" placeholder="ชื่อตัวยาที่ 2 เช่น Clavulanic acid" value="${escapeHtml(p.name2||'')}">
+          <input type="text" inputmode="decimal" class="prep-amt2" placeholder="${isPowder ? '100' : '57'}" value="${escapeHtml(p.amt2 ?? '')}">
+          <span class="prep-x2">${isPowder ? 'mg ต่อ 1 ขวด (เท่ากัน)' : 'mg ต่อปริมาตรเดียวกัน'}</span>
+        </div>
+      </div>
+    `;}).join("");
+
+    prepListEl.querySelectorAll(".prep-row").forEach(row=>{
+      const idx = parseInt(row.dataset.idx);
+      row.querySelector(".prep-name").addEventListener("input", e=> editingPreps[idx].name = e.target.value);
+      row.querySelector(".prep-amt").addEventListener("input", e=>{
+        editingPreps[idx].amt = e.target.value;
+        const reconEl = row.querySelector('.prep-recon-result');
+        const amtNum = parseFloat(editingPreps[idx].amt);
+        const reconNum = parseFloat(editingPreps[idx].reconVol);
+        if(!isNaN(amtNum) && !isNaN(reconNum) && reconNum !== 0){
+          reconEl.textContent = `≈ ${roundSmart(amtNum/reconNum)} mg/mL หลังผสม`;
+        } else {
+          reconEl.textContent = 'กรอก mg/ขวด และปริมาตรผสมเพื่อดูความเข้มข้นที่ได้';
+        }
+      });
+      const volInput = row.querySelector(".prep-vol");
+      if(volInput) volInput.addEventListener("input", e=> editingPreps[idx].vol = e.target.value);
+      const unitSelect = row.querySelector(".prep-unit");
+      const unitCustom = row.querySelector(".prep-unit-custom");
+      if(unitSelect) unitSelect.addEventListener("change", e=>{
+        editingPreps[idx].unit = e.target.value;
+        if(unitCustom){
+          if(e.target.value === '__custom__'){
+            unitCustom.style.display = '';
+            unitCustom.focus();
+          } else {
+            unitCustom.style.display = 'none';
+            editingPreps[idx].customUnit = '';
+            unitCustom.value = '';
+          }
+        }
+      });
+      if(unitCustom) unitCustom.addEventListener("input", e=> editingPreps[idx].customUnit = e.target.value);
+      const reconInput = row.querySelector(".prep-reconvol");
+      if(reconInput) reconInput.addEventListener("input", e=>{
+        editingPreps[idx].reconVol = e.target.value;
+        const reconEl = row.querySelector('.prep-recon-result');
+        const amtNum = parseFloat(editingPreps[idx].amt);
+        const reconNum = parseFloat(editingPreps[idx].reconVol);
+        if(!isNaN(amtNum) && !isNaN(reconNum) && reconNum !== 0){
+          reconEl.textContent = `≈ ${roundSmart(amtNum/reconNum)} mg/mL หลังผสม`;
+        } else {
+          reconEl.textContent = 'กรอก mg/ขวด และปริมาตรผสมเพื่อดูความเข้มข้นที่ได้';
+        }
+      });
+      row.querySelector(".prep-name2").addEventListener("input", e=> editingPreps[idx].name2 = e.target.value);
+      row.querySelector(".prep-amt2").addEventListener("input", e=> editingPreps[idx].amt2 = e.target.value);
+      row.querySelector(".prep-has-combo").addEventListener("change", e=>{
+        row.querySelector(".prep-combo-fields").style.display = e.target.checked ? "" : "none";
+        if(!e.target.checked){
+          editingPreps[idx].name2 = "";
+          editingPreps[idx].amt2 = "";
+          row.querySelector(".prep-name2").value = "";
+          row.querySelector(".prep-amt2").value = "";
+        }
+      });
+      row.querySelectorAll(".prep-form-btn").forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          const newForm = btn.dataset.form;
+          if(editingPreps[idx].formType === newForm) return;
+          editingPreps[idx].formType = newForm;
+          // switching form types: clear fields that don't apply to avoid stale/confusing data
+          if(newForm === "powder"){
+            editingPreps[idx].vol = "1";
+            editingPreps[idx].unit = "mg/mL";
+            editingPreps[idx].customUnit = "";
+          } else {
+            editingPreps[idx].reconVol = "";
+          }
+          renderPrepList();
+        });
+      });
+    });
+    prepListEl.querySelectorAll(".prep-del").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        editingPreps.splice(parseInt(btn.dataset.idx), 1);
+        renderPrepList();
+      });
+    });
+  }
+
+  document.getElementById("btnAddPrep").addEventListener("click", ()=>{
+    editingPreps.push({name:"", amt:"", vol:"", unit:"mg/mL", name2:"", amt2:"", formType:"liquid", reconVol:""});
+    renderPrepList();
+  });
+
+  function renderRegimenList(){
+    if(editingRegimens.length === 0){
+      regimenListEl.innerHTML = `<div class="hint">ยังไม่มีข้อบ่งใช้ — กด "+ เพิ่มข้อบ่งใช้ / เงื่อนไข" ด้านล่าง</div>`;
+      return;
+    }
+    regimenListEl.innerHTML = editingRegimens.map((r, i) => `
+      <div class="regimen-card" data-idx="${i}">
+        <div class="regimen-card-head">
+          <input type="text" class="regimen-name" placeholder="ชื่อข้อบ่งใช้ เช่น Severe infection" value="${escapeHtml(r.name||'')}">
+          ${editingRegimens.length > 1 ? `
+          <button type="button" class="regimen-del" data-idx="${i}" title="ลบข้อบ่งใช้นี้">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6h16z"/></svg>
+          </button>` : ''}
+        </div>
+
+        <div class="row2">
+          <div class="field" style="margin-bottom:0;">
+            <label>หน่วยขนาดยา</label>
+            <select class="regimen-unit">
+              ${UNIT_OPTIONS.map(u=>`<option value="${u.value}" ${r.unit===u.value?'selected':''}>${u.label}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>หรือพิมพ์หน่วยเอง</label>
+            <input type="text" class="regimen-unit-custom" placeholder="เช่น mg/m2/dose" value="${escapeHtml(r.unitCustom||'')}">
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:8px;">
+          <label style="display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" class="regimen-age-based" ${r.ageBased ? 'checked' : ''}>
+            ใช้ตามช่วงอายุ
+          </label>
+          <div class="hint">ปิดไว้เพื่อให้ใช้ขนาดตามน้ำหนักเป็นค่าเริ่มต้น</div>
+        </div>
+
+        <div class="row2 regimen-age-range" style="${r.ageBased ? '' : 'display:none;'}">
+          <div class="field" style="margin-bottom:0;">
+            <label>อายุขั้นต่ำ (ปี)</label>
+            <input type="number" class="regimen-age-min-years" min="0" placeholder="เช่น 2" value="${r.ageMinMonths != null ? Math.floor(r.ageMinMonths / 12) : ''}">
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>อายุขั้นต่ำ (เดือน)</label>
+            <input type="number" class="regimen-age-min-months" min="0" max="11" placeholder="เช่น 0" value="${r.ageMinMonths != null ? r.ageMinMonths % 12 : ''}">
+          </div>
+        </div>
+        <div class="row2 regimen-age-range" style="${r.ageBased ? '' : 'display:none;'}">
+          <div class="field" style="margin-bottom:0;">
+            <label>อายุสูงสุด (ปี)</label>
+            <input type="number" class="regimen-age-max-years" min="0" placeholder="เช่น 6" value="${r.ageMaxMonths != null ? Math.floor(r.ageMaxMonths / 12) : ''}">
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>อายุสูงสุด (เดือน)</label>
+            <input type="number" class="regimen-age-max-months" min="0" max="11" placeholder="เช่น 11" value="${r.ageMaxMonths != null ? r.ageMaxMonths % 12 : ''}">
+          </div>
+        </div>
+
+        <div class="row2">
+          <div class="field" style="margin-bottom:0;">
+            <label>ขนาดต่ำสุด</label>
+            <input type="number" class="regimen-dosemin" step="any" placeholder="ปล่อยว่างได้" value="${r.doseMin ?? ''}">
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>ขนาดสูงสุด</label>
+            <input type="number" class="regimen-dosemax" step="any" placeholder="เช่น 15" value="${r.doseMax ?? ''}">
+          </div>
+        </div>
+
+        <div class="row2">
+          <div class="field" style="margin-bottom:0;">
+            <label>Max dose</label>
+            <input type="number" class="regimen-absmax" step="any" placeholder="เช่น 1000" value="${r.absMax ?? ''}">
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>หน่วย max</label>
+            <select class="regimen-absmaxunit">
+              ${ABSMAX_UNIT_OPTIONS.map(u=>`<option value="${u.value}" ${r.absMaxUnit===u.value?'selected':''}>${u.label}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="unit-custom-row">
+          <input type="text" class="regimen-absmaxunit-custom" placeholder="หรือพิมพ์หน่วยเอง" value="${escapeHtml(r.absMaxUnitCustom||'')}">
+        </div>
+
+        <div class="field" style="margin-bottom:8px;">
+          <label>คำนวณขนาดยาจาก (สำหรับยาผสม 2 ตัว)</label>
+          <select class="regimen-dosebasis">
+            <option value="ing1" ${(!r.doseBasis || r.doseBasis==='ing1')?'selected':''}>ตัวยาที่ 1 (เช่น Amoxicillin) — ค่าเริ่มต้น</option>
+            <option value="ing2" ${r.doseBasis==='ing2'?'selected':''}>ตัวยาที่ 2 (เช่น Clavulanic acid)</option>
+            <option value="sum" ${r.doseBasis==='sum'?'selected':''}>รวมทั้งสองตัว (ตัวยาที่ 1 + ตัวยาที่ 2)</option>
+          </select>
+          <div class="hint">มีผลเฉพาะรูปแบบยาที่ตั้งเป็นยาผสม 2 ตัว — ถ้ายานี้ไม่ใช่ยาผสม ปล่อยเป็นค่าเริ่มต้นได้เลย</div>
+        </div>
+
+        <div class="field" style="margin-bottom:8px;">
+          <label>ความถี่ / วิธีให้</label>
+          <input type="text" class="regimen-freq" placeholder="เช่น q8h PO" value="${escapeHtml(r.freq||'')}">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>หมายเหตุ / ข้อควรระวัง</label>
+          <textarea class="regimen-notes">${escapeHtml(r.notes||'')}</textarea>
+        </div>
+      </div>
+    `).join("");
+
+    regimenListEl.querySelectorAll(".regimen-card").forEach(card=>{
+      const idx = parseInt(card.dataset.idx);
+      card.querySelector(".regimen-name").addEventListener("input", e=> editingRegimens[idx].name = e.target.value);
+      card.querySelector(".regimen-unit").addEventListener("change", e=> editingRegimens[idx].unit = e.target.value);
+      card.querySelector(".regimen-unit-custom").addEventListener("input", e=> editingRegimens[idx].unitCustom = e.target.value);
+      const ageBasedCheckbox = card.querySelector(".regimen-age-based");
+      ageBasedCheckbox.addEventListener("change", e=>{
+        editingRegimens[idx].ageBased = e.target.checked;
+        if(!e.target.checked){
+          editingRegimens[idx].ageMinMonths = null;
+          editingRegimens[idx].ageMaxMonths = null;
+        }
+        renderRegimenList();
+      });
+      card.querySelector(".regimen-age-min-years").addEventListener("input", e=> editingRegimens[idx].ageMinMonths = parseAgeRange(e.target.value, card.querySelector(".regimen-age-min-months").value));
+      card.querySelector(".regimen-age-min-months").addEventListener("input", e=> editingRegimens[idx].ageMinMonths = parseAgeRange(card.querySelector(".regimen-age-min-years").value, e.target.value));
+      card.querySelector(".regimen-age-max-years").addEventListener("input", e=> editingRegimens[idx].ageMaxMonths = parseAgeRange(e.target.value, card.querySelector(".regimen-age-max-months").value));
+      card.querySelector(".regimen-age-max-months").addEventListener("input", e=> editingRegimens[idx].ageMaxMonths = parseAgeRange(card.querySelector(".regimen-age-max-years").value, e.target.value));
+      card.querySelector(".regimen-dosemin").addEventListener("input", e=> editingRegimens[idx].doseMin = parseFloatOrNull(e.target.value));
+      card.querySelector(".regimen-dosemax").addEventListener("input", e=> editingRegimens[idx].doseMax = parseFloatOrNull(e.target.value));
+      card.querySelector(".regimen-absmax").addEventListener("input", e=> editingRegimens[idx].absMax = parseFloatOrNull(e.target.value));
+      card.querySelector(".regimen-absmaxunit").addEventListener("change", e=> editingRegimens[idx].absMaxUnit = e.target.value);
+      card.querySelector(".regimen-absmaxunit-custom").addEventListener("input", e=> editingRegimens[idx].absMaxUnitCustom = e.target.value);
+      card.querySelector(".regimen-dosebasis").addEventListener("change", e=> editingRegimens[idx].doseBasis = e.target.value);
+      card.querySelector(".regimen-freq").addEventListener("input", e=> editingRegimens[idx].freq = e.target.value);
+      card.querySelector(".regimen-notes").addEventListener("input", e=> editingRegimens[idx].notes = e.target.value);
+    });
+    regimenListEl.querySelectorAll(".regimen-del").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        editingRegimens.splice(parseInt(btn.dataset.idx), 1);
+        renderRegimenList();
+      });
+    });
+  }
+
+  document.getElementById("btnAddRegimen").addEventListener("click", ()=>{
+    editingRegimens.push({
+      name:"", unit:"mg/kg/dose", unitCustom:"",
+      doseMin:null, doseMax:null,
+      absMax:null, absMaxUnit:"mg/dose", absMaxUnitCustom:"",
+      ageBased:false,
+      ageMinMonths:null, ageMaxMonths:null,
+      freq:"", notes:"", doseBasis:"ing1"
+    });
+    renderRegimenList();
+  });
+
+  /* ---------- Renal (CrCl) adjustment editor ---------- */
+  const renalGroupListEl = document.getElementById("renalGroupList");
+  const renalCheckbox = document.getElementById("f_hasRenal");
+  const renalEditorWrap = document.getElementById("renalEditorWrap");
+
+  renalCheckbox.addEventListener("change", (e)=>{
+    renalEditorWrap.style.display = e.target.checked ? "" : "none";
+    if(e.target.checked && editingRenal.length === 0){
+      editingRenal.push({label:"Oral", brackets:[{range:"", text:""}]});
+      renderRenalGroupList();
+    }
+  });
+
+  function renderRenalGroupList(){
+    renalGroupListEl.innerHTML = editingRenal.map((g, gi) => `
+      <div class="renal-edit-group" data-gidx="${gi}">
+        <div class="renal-edit-group-head">
+          <input type="text" class="renal-group-label" placeholder="เช่น Oral, IV เด็ก, IV ผู้ใหญ่" value="${escapeHtml(g.label||'')}">
+          <button type="button" class="regimen-del renal-group-del" data-gidx="${gi}" title="ลบกลุ่มนี้">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6h16z"/></svg>
+          </button>
+        </div>
+        ${g.brackets.map((b, bi) => `
+          <div class="renal-bracket-edit-row" data-bidx="${bi}">
+            <input type="text" class="renal-bracket-range" placeholder="เช่น CrCl <10" value="${escapeHtml(b.range||'')}">
+            <textarea class="renal-bracket-text" placeholder="คำแนะนำขนาดยา เช่น ให้ 250-500 mg ทุก 24 ชั่วโมง">${escapeHtml(b.text||'')}</textarea>
+            <button type="button" class="regimen-del renal-bracket-del" data-bidx="${bi}" title="ลบช่วงนี้">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6h16z"/></svg>
+            </button>
+          </div>
+        `).join("")}
+        <button type="button" class="btn-ghost btn-sm renal-add-bracket" data-gidx="${gi}" style="margin-top:4px;">+ เพิ่มช่วง CrCl</button>
+      </div>
+    `).join("");
+
+    renalGroupListEl.querySelectorAll(".renal-edit-group").forEach(groupEl=>{
+      const gi = parseInt(groupEl.dataset.gidx);
+      groupEl.querySelector(".renal-group-label").addEventListener("input", e=> editingRenal[gi].label = e.target.value);
+
+      groupEl.querySelectorAll(".renal-bracket-edit-row").forEach(rowEl=>{
+        const bi = parseInt(rowEl.dataset.bidx);
+        rowEl.querySelector(".renal-bracket-range").addEventListener("input", e=> editingRenal[gi].brackets[bi].range = e.target.value);
+        rowEl.querySelector(".renal-bracket-text").addEventListener("input", e=> editingRenal[gi].brackets[bi].text = e.target.value);
+        rowEl.querySelector(".renal-bracket-del").addEventListener("click", ()=>{
+          editingRenal[gi].brackets.splice(bi, 1);
+          renderRenalGroupList();
+        });
+      });
+
+      groupEl.querySelector(".renal-add-bracket").addEventListener("click", ()=>{
+        editingRenal[gi].brackets.push({range:"", text:""});
+        renderRenalGroupList();
+      });
+      groupEl.querySelector(".renal-group-del").addEventListener("click", ()=>{
+        editingRenal.splice(gi, 1);
+        renderRenalGroupList();
+      });
+    });
+  }
+
+  document.getElementById("btnAddRenalGroup").addEventListener("click", ()=>{
+    editingRenal.push({label:"", brackets:[{range:"", text:""}]});
+    renderRenalGroupList();
+  });
+
+  function openDrugModal(id){
+    state.editingDrugId = id || null;
+
+    if(id){
+      const d = state.drugs.find(x=>x.id===id);
+      drugModalTitle.textContent = "แก้ไขยา";
+      document.getElementById("f_name").value = d.name || "";
+      document.getElementById("f_cat").value = d.category || "";
+      document.getElementById("f_source").value = d.source || "";
+      const PREP_UNIT_VALUES = PREP_UNITS.map(u=>u.value);
+      editingPreps = (d.preps || []).map(p=>{
+        const isPowder = p.formType === "powder";
+        if(isPowder){
+          return {
+            name: p.name || "",
+            formType: "powder",
+            amt: p.vialAmt ?? p.amt ?? "",
+            reconVol: p.reconVol ?? "",
+            vol: "", unit: "mg/mL", customUnit: "",
+            name2: p.name2 || "",
+            amt2: p.vialAmt2 ?? p.amt2 ?? "",
+          };
+        }
+        const unitVal = p.unit || "mg/mL";
+        return {
+          name: p.name || "",
+          formType: "liquid",
+          amt: p.amt ?? "",
+          vol: p.vol ?? "",
+          unit: PREP_UNIT_VALUES.includes(unitVal) ? unitVal : "mg/mL",
+          customUnit: PREP_UNIT_VALUES.includes(unitVal) ? "" : unitVal,
+          name2: p.name2 || "",
+          amt2: p.amt2 ?? "",
+        };
+      });
+
+      editingRegimens = (d.regimens || []).map(r=>{
+        const unitVal = r.unit || "mg/kg/dose";
+        const absUnitVal = r.absMaxUnit ?? "mg/dose";
+        return {
+          name: r.name || "",
+          unit: UNIT_VALUES.includes(unitVal) ? unitVal : "mg/kg/dose",
+          unitCustom: UNIT_VALUES.includes(unitVal) ? "" : unitVal,
+          doseMin: r.doseMin ?? null,
+          doseMax: r.doseMax ?? null,
+          absMax: r.absMax ?? null,
+          absMaxUnit: ABSMAX_UNIT_VALUES.includes(absUnitVal) ? absUnitVal : "mg/dose",
+          absMaxUnitCustom: ABSMAX_UNIT_VALUES.includes(absUnitVal) ? "" : absUnitVal,
+          ageBased: r.ageBased ?? false,
+          ageMinMonths: r.ageMinMonths ?? null,
+          ageMaxMonths: r.ageMaxMonths ?? null,
+          freq: r.freq || "",
+          notes: r.notes || "",
+          doseBasis: r.doseBasis || "ing1",
+        };
+      });
+
+      editingRenal = (d.renalAdjust || []).map(g => ({
+        label: g.label || "",
+        brackets: (g.brackets || []).map(b => ({range: b.range || "", text: b.text || ""}))
+      }));
+      renalCheckbox.checked = editingRenal.length > 0;
+      renalEditorWrap.style.display = editingRenal.length > 0 ? "" : "none";
+    } else {
+      drugModalTitle.textContent = "เพิ่มยาใหม่";
+      ["f_name","f_cat","f_source"].forEach(fid=>document.getElementById(fid).value = "");
+      editingPreps = [];
+      editingRegimens = [{
+        name:"", unit:"mg/kg/dose", unitCustom:"",
+        doseMin:null, doseMax:null,
+        absMax:null, absMaxUnit:"mg/dose", absMaxUnitCustom:"",
+        ageBased:false, ageMinMonths:null, ageMaxMonths:null,
+        freq:"", notes:"", doseBasis:"ing1"
+      }];
+      editingRenal = [];
+      renalCheckbox.checked = false;
+      renalEditorWrap.style.display = "none";
+    }
+    renderPrepList();
+    renderRegimenList();
+    renderRenalGroupList();
+    drugModalBackdrop.classList.add("show");
+    document.getElementById("f_name").focus();
+  }
+  function closeDrugModal(){
+    drugModalBackdrop.classList.remove("show");
+  }
+
+  document.getElementById("btnAddDrug").addEventListener("click", ()=>openDrugModal(null));
+  document.getElementById("btnCancelDrug").addEventListener("click", closeDrugModal);
+  drugModalBackdrop.addEventListener("click", (e)=>{ if(e.target===drugModalBackdrop) closeDrugModal(); });
+
+  document.getElementById("btnSaveDrug").addEventListener("click", ()=>{
+    const name = document.getElementById("f_name").value.trim();
+    if(!name){
+      showToast("กรุณากรอกชื่อยา", true);
+      return;
+    }
+
+    const prepIssues = [];
+    const validPreps = [];
+    editingPreps.forEach((p, i) => {
+      const nameTrim = (p.name||"").trim();
+      const isPowder = p.formType === "powder";
+      const amtNum = parseFloatOrNull(p.amt);
+      const hasAnyInput = nameTrim || (p.amt && String(p.amt).trim()) || (p.vol && String(p.vol).trim()) || (p.reconVol && String(p.reconVol).trim());
+
+      if(!hasAnyInput) return; // a fully blank row added by mistake — skip silently, nothing to warn about
+
+      if(amtNum === null){
+        prepIssues.push(`แถวที่ ${i+1} (${nameTrim || 'ไม่มีชื่อ'}): ความเข้มข้น/ปริมาณไม่ใช่ตัวเลขที่ถูกต้อง — ห้ามใส่เครื่องหมาย "+" ในช่องนี้ ให้กรอกแยกเป็นตัวยาที่ 2 ด้านล่างแทน`);
+        return;
+      }
+
+      let prep;
+      const name2Trim = (p.name2||"").trim();
+      const amt2Num = parseFloatOrNull(p.amt2);
+      const hasCombo = name2Trim || (p.amt2 && String(p.amt2).trim());
+
+      if(isPowder){
+        const reconVolNum = parseFloatOrNull(p.reconVol);
+        if(reconVolNum === null || reconVolNum <= 0){
+          prepIssues.push(`แถวที่ ${i+1} (${nameTrim || 'ไม่มีชื่อ'}): กรุณากรอกปริมาตรที่ผสม (diluent) เป็นตัวเลขที่ถูกต้อง — ระบบต้องใช้ค่านี้คำนวณความเข้มข้นหลังผสม`);
+          return;
+        }
+        prep = {
+          name: nameTrim || "รูปแบบยา",
+          formType: "powder",
+          vialAmt: amtNum,        // mg per vial, kept for display/editing
+          reconVol: reconVolNum,  // diluent volume in mL, kept for display/editing
+          amt: amtNum,            // derived effective concentration fields used by the calc engine
+          vol: reconVolNum,
+          unit: "mg/mL",
+        };
+        if(hasCombo){
+          if(amt2Num === null){
+            prepIssues.push(`แถวที่ ${i+1} (${nameTrim || 'ไม่มีชื่อ'}): ความเข้มข้นของตัวยาที่ 2 ไม่ใช่ตัวเลขที่ถูกต้อง`);
+            return;
+          }
+          prep.name2 = name2Trim || "ตัวยาที่ 2";
+          prep.vialAmt2 = amt2Num; // mg per vial for ingredient 2
+          prep.amt2 = amt2Num;     // same numeric value works for the per-mL calc since reconVol is shared
+        }
+      } else {
+        const volNum = parseFloatOrNull(p.vol);
+        if(volNum === null){
+          prepIssues.push(`แถวที่ ${i+1} (${nameTrim || 'ไม่มีชื่อ'}): ความเข้มข้น/ปริมาตรไม่ใช่ตัวเลขที่ถูกต้อง — ห้ามใส่เครื่องหมาย "+" ในช่องนี้ ให้กรอกแยกเป็นตัวยาที่ 2 ด้านล่างแทน`);
+          return;
+        }
+        prep = {
+          name: nameTrim || "รูปแบบยา",
+          formType: "liquid",
+          amt: amtNum,
+          vol: volNum,
+          unit: (p.customUnit||"").trim() || p.unit || "mg/mL"
+        };
+        if(hasCombo){
+          if(amt2Num === null){
+            prepIssues.push(`แถวที่ ${i+1} (${nameTrim || 'ไม่มีชื่อ'}): ความเข้มข้นของตัวยาที่ 2 ไม่ใช่ตัวเลขที่ถูกต้อง`);
+            return;
+          }
+          prep.name2 = name2Trim || "ตัวยาที่ 2";
+          prep.amt2 = amt2Num;
+        }
+      }
+
+      validPreps.push(prep);
+    });
+
+    if(prepIssues.length > 0){
+      showToast("ไม่ได้บันทึก: " + prepIssues[0], true);
+      return;
+    }
+
+    const validRegimens = editingRegimens
+      .filter(r => (r.doseMin !== null && r.doseMin !== undefined) || (r.doseMax !== null && r.doseMax !== undefined))
+      .map((r, i) => ({
+        id: uid(),
+        name: (r.name||"").trim() || (editingRegimens.length > 1 ? `ข้อบ่งใช้ ${i+1}` : "ขนาดยาทั่วไป"),
+        unit: (r.unitCustom||"").trim() || r.unit || "mg/kg/dose",
+        doseMin: r.doseMin ?? null,
+        doseMax: r.doseMax ?? null,
+        absMax: r.absMax ?? null,
+        absMaxUnit: (r.absMaxUnitCustom||"").trim() || r.absMaxUnit || "",
+        ageBased: !!r.ageBased,
+        ageMinMonths: r.ageMinMonths ?? null,
+        ageMaxMonths: r.ageMaxMonths ?? null,
+        freq: (r.freq||"").trim(),
+        notes: (r.notes||"").trim(),
+        doseBasis: r.doseBasis || "ing1",
+      }));
+
+    if(validRegimens.length === 0){
+      showToast("กรุณากรอกขนาดยาอย่างน้อย 1 ข้อบ่งใช้ (min หรือ max)", true);
+      return;
+    }
+
+    let validRenal = [];
+    if(renalCheckbox.checked){
+      validRenal = editingRenal
+        .map(g => ({
+          label: (g.label||"").trim() || "ขนาดยา",
+          brackets: g.brackets
+            .filter(b => (b.range||"").trim() || (b.text||"").trim())
+            .map(b => ({range:(b.range||"").trim(), text:(b.text||"").trim()}))
+        }))
+        .filter(g => g.brackets.length > 0);
+    }
+
+    const data = {
+      name,
+      category: document.getElementById("f_cat").value.trim(),
+      source: document.getElementById("f_source").value.trim(),
+      preps: validPreps,
+      regimens: validRegimens,
+      renalAdjust: validRenal,
+    };
+
+    if(state.editingDrugId){
+      const idx = state.drugs.findIndex(d=>d.id===state.editingDrugId);
+      state.drugs[idx] = {...state.drugs[idx], ...data};
+      showToast("บันทึกการแก้ไขแล้ว");
+    } else {
+      data.id = uid();
+      state.drugs.push(data);
+      state.selectedDrugId = data.id;
+      showToast("เพิ่มยาใหม่แล้ว");
+    }
+    state.selectedRegimenIndex = 0;
+    saveDrugs();
+    closeDrugModal();
+    renderDrugList();
+    renderResult();
+  });
+
+  function parseFloatOrNull(v){
+    if(v === "" || v === null || v === undefined) return null;
+    const s = String(v).trim();
+    if(s === "") return null;
+    // strict: the ENTIRE string must be a valid number (optionally with leading +/-,
+    // decimal point). This rejects things like "400 + 57" which parseFloat() would
+    // otherwise silently truncate to 400, hiding data entry mistakes.
+    if(!/^-?\d+(\.\d+)?$/.test(s)) return null;
+    const n = parseFloat(s);
+    return isNaN(n) ? null : n;
+  }
+
+  /* ===================== Bulk Import Modal ===================== */
+  const bulkModalBackdrop = document.getElementById("bulkModalBackdrop");
+  document.getElementById("btnBulkImport").addEventListener("click", ()=>{
+    bulkModalBackdrop.classList.add("show");
+  });
+  document.getElementById("btnCancelBulk").addEventListener("click", ()=>{
+    bulkModalBackdrop.classList.remove("show");
+  });
+  bulkModalBackdrop.addEventListener("click", (e)=>{ if(e.target===bulkModalBackdrop) bulkModalBackdrop.classList.remove("show"); });
+
+  document.querySelectorAll(".modal-tab").forEach(tab=>{
+    tab.addEventListener("click", ()=>{
+      document.querySelectorAll(".modal-tab").forEach(t=>t.classList.remove("sel"));
+      document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("show"));
+      tab.classList.add("sel");
+      document.getElementById(tab.dataset.tab === "json" ? "tabJson" : "tabCsv").classList.add("show");
+    });
+  });
+
+  document.getElementById("btnSaveBulk").addEventListener("click", ()=>{
+    const activeTab = document.querySelector(".modal-tab.sel").dataset.tab;
+    let items = [];
+    try{
+      if(activeTab === "json"){
+        const raw = document.getElementById("bulkInput").value.trim();
+        if(!raw){ showToast("กรุณาวางข้อมูล JSON", true); return; }
+        const parsed = JSON.parse(raw);
+        items = Array.isArray(parsed) ? parsed : [parsed];
+      } else {
+        const raw = document.getElementById("bulkInputCsv").value.trim();
+        if(!raw){ showToast("กรุณาวางข้อมูล CSV", true); return; }
+        items = parseCsv(raw);
+      }
+    }catch(e){
+      showToast("รูปแบบข้อมูลไม่ถูกต้อง: " + e.message, true);
+      return;
+    }
+
+    let count = 0;
+    items.forEach(it=>{
+      if(!it.name) return;
+      let preps = [];
+      if(Array.isArray(it.preps)){
+        preps = it.preps
+          .filter(p => p && p.amt !== undefined && p.vol !== undefined)
+          .map(p => ({
+            name: p.name || "รูปแบบยา",
+            amt: Number(p.amt),
+            vol: Number(p.vol),
+            unit: p.unit || "mg/mL"
+          }));
+      }
+
+      let regimens;
+      if(Array.isArray(it.regimens) && it.regimens.length > 0){
+        regimens = it.regimens.map(r => ({
+          id: uid(),
+          name: r.name || "ขนาดยาทั่วไป",
+          unit: r.unit || "mg/kg/dose",
+          doseMin: parseFloatOrNull(r.doseMin),
+          doseMax: parseFloatOrNull(r.doseMax),
+          absMax: parseFloatOrNull(r.absMax),
+          absMaxUnit: r.absMaxUnit || "mg/dose",
+          freq: r.freq || "",
+          notes: r.notes || "",
+          doseBasis: r.doseBasis || "ing1",
+        }));
+      } else {
+        // backward-compatible: flat dose fields on the item itself become one regimen
+        regimens = [{
+          id: uid(),
+          name: "ขนาดยาทั่วไป",
+          unit: it.unit || "mg/kg/dose",
+          doseMin: parseFloatOrNull(it.doseMin),
+          doseMax: parseFloatOrNull(it.doseMax),
+          absMax: parseFloatOrNull(it.absMax),
+          absMaxUnit: it.absMaxUnit || "mg/dose",
+          freq: it.freq || "",
+          notes: it.notes || "",
+        }];
+      }
+
+      state.drugs.push({
+        id: uid(),
+        name: it.name,
+        category: it.category || "",
+        source: it.source || "",
+        preps,
+        regimens,
+      });
+      count++;
+    });
+
+    if(count === 0){
+      showToast("ไม่พบรายการยาที่นำเข้าได้", true);
+      return;
+    }
+
+    saveDrugs();
+    renderDrugList();
+    bulkModalBackdrop.classList.remove("show");
+    document.getElementById("bulkInput").value = "";
+    document.getElementById("bulkInputCsv").value = "";
+    showToast(`นำเข้ายาสำเร็จ ${count} รายการ`);
+  });
+
+  function parseCsv(raw){
+    const delim = raw.includes("\t") && !raw.split("\n")[0].includes(",") ? "\t" : ",";
+    const lines = raw.split(/\r?\n/).filter(l=>l.trim().length>0);
+    const headers = lines[0].split(delim).map(h=>h.trim());
+    return lines.slice(1).map(line=>{
+      const cells = line.split(delim);
+      const obj = {};
+      headers.forEach((h,i)=>{ obj[h] = (cells[i]||"").trim(); });
+      return obj;
+    });
+  }
+
+  /* ===================== Export / Import full backup ===================== */
+  document.getElementById("btnExport").addEventListener("click", ()=>{
+    const blob = new Blob([JSON.stringify(state.drugs, null, 2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `bank-ped-dose-backup-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("ส่งออกข้อมูลแล้ว");
+  });
+
+  const fileImportInput = document.getElementById("fileImport");
+  document.getElementById("btnImport").addEventListener("click", ()=> fileImportInput.click());
+  fileImportInput.addEventListener("change", (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      try{
+        const parsed = JSON.parse(ev.target.result);
+        if(!Array.isArray(parsed)) throw new Error("ไฟล์ไม่ใช่ array ของยา");
+        const merge = confirm(`พบยา ${parsed.length} รายการในไฟล์\n\nกด OK เพื่อ "รวม" กับรายการปัจจุบัน\nกด Cancel เพื่อ "แทนที่" รายการทั้งหมด`);
+        const normalized = parsed.map(p=>{
+          if(!p.id) p.id = uid();
+          return normalizeDrug(p);
+        });
+        if(merge){
+          state.drugs = state.drugs.concat(normalized);
+        } else {
+          state.drugs = normalized;
+        }
+        saveDrugs();
+        renderDrugList();
+        renderResult();
+        showToast(`นำเข้าไฟล์สำเร็จ (${parsed.length} รายการ)`);
+      }catch(err){
+        showToast("ไฟล์ไม่ถูกต้อง: " + err.message, true);
+      }
+      fileImportInput.value = "";
+    };
+    reader.readAsText(file);
+  });
+
+  /* ===================== Toast ===================== */
+  let toastTimer = null;
+  function showToast(msg, isErr){
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.toggle("err", !!isErr);
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> t.classList.remove("show"), 2600);
+  }
+
+  /* ===================== Init ===================== */
+  renderDrugList();
+  renderPatientPanel();
+  renderResult();
+
+})();
+</script>
+
+</body>
+</html>
